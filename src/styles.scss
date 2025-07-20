@@ -1,1 +1,112 @@
+// Include theming for Angular Material with `mat.theme()`.
+// This Sass mixin will define CSS variables that are used for styling Angular Material
+// components according to the Material 3 design spec.
+// Learn more about theming and how to use it for your application's
+// custom components at https://material.angular.dev/guide/theming
+@use '@angular/material' as mat;
+
+html {
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$blue-palette,
+        accent: mat.$cyan-palette,
+        warn: mat.$red-palette,
+      ),
+      typography: Roboto,
+      density: 0,
+    )
+  );
+
+  // Set dark color scheme
+  color-scheme: dark;
+
+  // Set a default background, font and text colors for the application using
+  // Angular Material's system-level CSS variables. Learn more about these
+  // variables at https://material.angular.dev/guide/system-variables
+  background-color: #121212;
+  color: #ffffff;
+  font: var(--mat-sys-body-medium);
+}
+
 /* You can add global styles to this file, and also import other style files */
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+  background-color: #121212;
+  color: #ffffff;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+  background-color: #121212;
+  color: #ffffff;
+}
+
+// Global styles for active devices
+.active-device {
+  background-color: #1e3a8a !important;
+  border: 1px solid #3b82f6;
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
+}
+
+.active-device .device-icon,
+.active-device .device-label {
+  color: #3b82f6 !important;
+}
+
+// Custom scrollbar styles for dark theme
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1f2937;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}
+
+// Override Material Design default colors for dark theme
+.mat-mdc-card {
+  background-color: #1f2937 !important;
+  color: #ffffff !important;
+}
+
+.mat-mdc-tab-group {
+  background-color: #121212 !important;
+}
+
+.mat-mdc-tab-header {
+  background-color: #1f2937 !important;
+}
+
+.mat-mdc-tab-label {
+  color: #9ca3af !important;
+}
+
+.mat-mdc-tab-label.mat-mdc-tab-label-active {
+  color: #3b82f6 !important;
+}
+
+.mat-mdc-tab-header-pagination-chevron {
+  color: #9ca3af !important;
+}
+
+.mat-mdc-slide-toggle {
+  --mdc-switch-selected-track-color: #3b82f6;
+  --mdc-switch-selected-handle-color: #ffffff;
+  --mdc-switch-unselected-track-color: #4b5563;
+  --mdc-switch-unselected-handle-color: #9ca3af;
+}

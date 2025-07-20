@@ -1,0 +1,311 @@
+# Smart Home UI Development Plan
+
+Based on the screenshots and requirements, I'll create a comprehensive plan for developing your Smart Home UI application using Angular.
+
+## 1. Project Setup & Architecture
+
+### Initial Setup
+
+```bash
+ng new smart-home-ui --standalone --routing --style=scss
+cd smart-home-ui
+ng add @angular/material
+```
+
+### Core Architecture
+
+- **State Management**: Use Angular Signals for reactive state
+- **Component Structure**: Standalone components with clear hierarchy
+- **Styling**: Dark theme with responsive design
+- **Data Flow**: Mock data → Services → Components
+
+## 2. Component Structure
+
+```
+src/
+├── app/
+│   ├── core/
+│   │   ├── models/                  # Data interfaces
+│   │   ├── services/                # Data services
+│   │   └── pipes/                   # Global pipes
+│   ├── shared/
+│   │   ├── directives/              # Custom directives
+│   │   ├── components/              # Reusable components
+│   │   └── pipes/                   # Custom pipes
+│   ├── features/
+│   │   ├── sidebar/                 # Sidebar components
+│   │   ├── dashboard/               # Dashboard components
+│   │   ├── cards/                   # Card components
+│   │   └── devices/                 # Device components
+│   ├── app.component.ts             # Root component
+│   └── app.routes.ts                # Application routes
+└── assets/
+    └── mock-data/                   # Mock data JSON
+```
+
+## 3. Data Models & Interfaces
+
+```typescript
+// Tab interface
+interface Tab {
+  id: string;
+  title: string;
+  cards: Card[];
+}
+
+// Card interface
+interface Card {
+  id: string;
+  title: string;
+  layout: 'singleDevice' | 'horizontalLayout' | 'verticalLayout';
+  items: (Device | Sensor)[];
+}
+
+// Base item interface
+interface BaseItem {
+  type: 'device' | 'sensor';
+  icon: string;
+  label: string;
+}
+
+// Device interface
+interface Device extends BaseItem {
+  type: 'device';
+  state: boolean;
+}
+
+// Sensor interface
+interface Sensor extends BaseItem {
+  type: 'sensor';
+  value: {
+    amount: number;
+    unit: string;
+  };
+}
+
+// Dashboard data
+interface DashboardData {
+  tabs: Tab[];
+}
+```
+
+## 4. Component Implementation Plan
+
+### Phase 1: Core Structure & Layout
+
+1. **App Component** - Main layout container
+2. **Sidebar Component** - Navigation sidebar with toggle
+3. **Dashboard Component** - Main content area with tabs
+
+### Phase 2: Card Components
+
+1. **Card List Component** - Renders multiple cards
+2. **Card Component** - Base card with title and content
+   - Implement layout variations (single, horizontal, vertical)
+   - Add group toggle functionality
+
+### Phase 3: Device & Sensor Components
+
+1. **Device Component** - Controllable device with toggle
+2. **Sensor Component** - Read-only sensor with formatted value
+
+### Phase 4: Custom Directives & Pipes
+
+1. **Active Device Directive** - Highlight active devices
+2. **Sensor Value Pipe** - Format sensor values with units
+
+## 5. Implementation Details
+
+### Sidebar Component
+
+- Fixed position on desktop, collapsible on mobile
+- Include header, navigation menu, and footer
+- Avatar placeholder in footer
+
+### Dashboard Component
+
+- Tab navigation with Angular Material tabs
+- Dynamic content based on selected tab
+- Responsive grid layout for cards
+
+### Card Component
+
+- Flexible layout based on card.layout property
+- Group toggle logic for multiple controllable devices
+- Consistent styling across different card types
+
+### Device Component
+
+- Toggle functionality (icon click or switch)
+- Visual feedback for state changes
+- Integration with ActiveDeviceDirective
+
+### Sensor Component
+
+- Display formatted values using SensorValuePipe
+- Appropriate icons for different sensor types
+
+## 6. Custom Directives & Pipes
+
+### ActiveDeviceDirective
+
+```typescript
+@Directive({
+  selector: '[appActiveDevice]',
+  standalone: true,
+})
+export class ActiveDeviceDirective {
+  @Input() set appActiveDevice(isActive: boolean) {
+    if (isActive) {
+      this.renderer.addClass(this.el.nativeElement, 'active-device');
+    } else {
+      this.renderer.removeClass(this.el.nativeElement, 'active-device');
+    }
+  }
+
+  constructor(
+    private el: ElementRef,
+    private renderer: Renderer2
+  ) {}
+}
+```
+
+### SensorValuePipe
+
+```typescript
+@Pipe({
+  name: 'sensorValue',
+  standalone: true,
+})
+export class SensorValuePipe implements PipeTransform {
+  transform(value: { amount: number; unit: string }): string {
+    if (!value) return '';
+
+    // Special handling for certain units
+    if (value.unit === '°C') {
+      return `${value.amount.toFixed(1)}${value.unit}`;
+    } else if (value.unit === '%') {
+      return `${value.amount.toFixed(1)}${value.unit}`;
+    } else if (value.unit === 'clear') {
+      return 'Clear';
+    } else if (value.unit === 'detected') {
+      return 'Motion Detected';
+    }
+
+    return `${value.amount} ${value.unit}`;
+  }
+}
+```
+
+## 7. Services
+
+### DashboardService
+
+```typescript
+@Injectable({
+  providedIn: 'root',
+})
+export class DashboardService {
+  private dashboardData = signal<DashboardData>(mockData);
+
+  getDashboardData(): Signal<DashboardData> {
+    return this.dashboardData.asReadonly();
+  }
+
+  toggleDevice(tabId: string, cardId: string, deviceIndex: number): void {
+    this.dashboardData.update(data => {
+      // Find and toggle the specific device
+      // Return updated data
+    });
+  }
+
+  toggleAllDevices(tabId: string, cardId: string, state: boolean): void {
+    this.dashboardData.update(data => {
+      // Find card and toggle all devices to the specified state
+      // Return updated data
+    });
+  }
+}
+```
+
+## 8. Implementation Timeline
+
+### Week 1: Setup & Core Components
+
+- Project initialization with Angular CLI
+- Core models and interfaces
+- Basic layout and navigation
+- Sidebar implementation
+
+### Week 2: Dashboard & Cards
+
+- Tab navigation system
+- Card list component
+- Card component with layout variations
+- Group toggle functionality
+
+### Week 3: Devices & Sensors
+
+- Device component with toggle functionality
+- Sensor component with value display
+- Custom pipes for formatting
+- Custom directives for visual feedback
+
+### Week 4: Refinement & Testing
+
+- Responsive design adjustments
+- Animation and transitions
+- Cross-browser testing
+- Performance optimization
+
+## 9. Styling Approach
+
+Use Angular Material with a custom dark theme that matches the screenshots:
+
+```scss
+// Custom theme
+$smart-home-primary: mat.define-palette(mat.$blue-palette, 500);
+$smart-home-accent: mat.define-palette(mat.$cyan-palette, A200);
+$smart-home-warn: mat.define-palette(mat.$red-palette);
+
+$smart-home-theme: mat.define-dark-theme(
+  (
+    color: (
+      primary: $smart-home-primary,
+      accent: $smart-home-accent,
+      warn: $smart-home-warn,
+    ),
+    typography: mat.define-typography-config(),
+    density: 0,
+  )
+);
+
+// Apply the theme
+@include mat.all-component-themes($smart-home-theme);
+
+// Custom styles for cards
+.card {
+  background-color: #1e1e1e;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+// Active device styling
+.active-device {
+  color: #29b6f6;
+  filter: drop-shadow(0 0 4px rgba(41, 182, 246, 0.5));
+}
+```
+
+## 10. Next Steps & Future Enhancements
+
+1. **Backend Integration**: Replace mock data with API calls
+2. **Authentication**: Add user login and profile management
+3. **Device Groups**: Allow grouping devices for batch control
+4. **Automation Rules**: Create conditional rules for device control
+5. **Historical Data**: Add charts for sensor data over time
+
+This plan provides a comprehensive roadmap for implementing the Smart Home UI application based on the requirements and screenshots provided. The modular approach ensures maintainability and scalability as the application grows.
+
+Would you like me to start by creating any specific component or implementing a particular feature first?
