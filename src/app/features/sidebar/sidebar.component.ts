@@ -32,10 +32,6 @@ import { MatSidenavModule } from '@angular/material/sidenav';
             <mat-icon matListItemIcon>dashboard</mat-icon>
             <span matListItemTitle>Overview</span>
           </a>
-          <a mat-list-item routerLink="/lights" routerLinkActive="active" class="menu-item">
-            <mat-icon matListItemIcon>lightbulb</mat-icon>
-            <span matListItemTitle>Lights</span>
-          </a>
           <a mat-list-item routerLink="/about" routerLinkActive="active" class="menu-item">
             <mat-icon matListItemIcon>info</mat-icon>
             <span matListItemTitle>About</span>

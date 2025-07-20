@@ -107,21 +107,91 @@
       "title": "Lights",
       "cards": [
         {
-          "id": "living-room-lights",
-          "title": "Living Room Lights",
-          "layout": "horizontalLayout",
+          "id": "hallway",
+          "title": "Hallway",
+          "layout": "verticalLayout",
           "items": [
             {
               "type": "device",
-              "label": "Main Light",
+              "label": "Light",
+              "state": false,
+              "icon": "lightbulb"
+            }
+          ]
+        },
+        {
+          "id": "living-room",
+          "title": "Living Room",
+          "layout": "verticalLayout",
+          "items": [
+            {
+              "type": "device",
+              "label": "Light",
               "state": true,
               "icon": "lightbulb"
             },
             {
               "type": "device",
-              "label": "Ambient Light",
+              "label": "Lamp",
+              "state": true,
+              "icon": "lightbulb_outline"
+            }
+          ]
+        },
+        {
+          "id": "bedroom",
+          "title": "Bedroom",
+          "layout": "verticalLayout",
+          "items": [
+            {
+              "type": "device",
+              "label": "Light",
+              "state": false,
+              "icon": "lightbulb"
+            },
+            {
+              "type": "device",
+              "label": "Left Lamp",
               "state": false,
               "icon": "lightbulb_outline"
+            },
+            {
+              "type": "device",
+              "label": "Right Lamp",
+              "state": false,
+              "icon": "lightbulb_outline"
+            }
+          ]
+        },
+        {
+          "id": "kitchen",
+          "title": "Kitchen",
+          "layout": "verticalLayout",
+          "items": [
+            {
+              "type": "device",
+              "label": "Light",
+              "state": false,
+              "icon": "lightbulb"
+            },
+            {
+              "type": "device",
+              "label": "LED",
+              "state": true,
+              "icon": "lightbulb_outline"
+            }
+          ]
+        },
+        {
+          "id": "bathroom-lights",
+          "title": "Bathroom",
+          "layout": "verticalLayout",
+          "items": [
+            {
+              "type": "device",
+              "label": "Light",
+              "state": false,
+              "icon": "lightbulb"
             }
           ]
         }

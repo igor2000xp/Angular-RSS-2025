@@ -1,0 +1,84 @@
+:host {
+  .app-container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #1e1e1e;
+  }
+
+  .top-bar {
+    background-color: #2d3748;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 16px;
+    border-bottom: 1px solid #4a5568;
+    z-index: 1000;
+  }
+
+  .top-bar-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .menu-button {
+    color: #a0aec0;
+  }
+
+  .menu-button:hover {
+    color: #ffffff;
+  }
+
+  .app-title {
+    font-size: 18px;
+    font-weight: 500;
+    color: #ffffff;
+  }
+
+  .top-bar-right {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .top-tabs {
+    background-color: transparent;
+  }
+
+  .top-tabs ::ng-deep .mat-mdc-tab-header {
+    background-color: transparent;
+    border-bottom: none;
+  }
+
+  .top-tabs ::ng-deep .mat-mdc-tab-label {
+    color: #a0aec0;
+    font-weight: 500;
+    min-width: 80px;
+  }
+
+  .top-tabs ::ng-deep .mat-mdc-tab-label.mat-mdc-tab-label-active {
+    color: #4299e1;
+  }
+
+  .top-tabs ::ng-deep .mat-mdc-ink-bar {
+    background-color: #4299e1;
+  }
+
+  .main-container {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+  }
+
+  @media (max-width: 768px) {
+    .top-bar {
+      padding: 0 8px;
+    }
+
+    .app-title {
+      font-size: 16px;
+    }
+  }
+}
