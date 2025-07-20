@@ -1,1 +1,77 @@
 /* You can add global styles to this file, and also import other style files */
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+  background-color: #1e1e1e;
+  color: #ffffff;
+}
+
+// Global styles for active devices
+.active-device {
+  background-color: #2d3748 !important;
+  border: 1px solid #4299e1;
+  box-shadow: 0 0 8px rgba(66, 153, 225, 0.3);
+}
+
+.active-device .device-icon,
+.active-device .device-label {
+  color: #4299e1 !important;
+}
+
+// Custom scrollbar styles for dark theme
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #2d3748;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #4a5568;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #718096;
+}
+
+// Override Material Design default colors for dark theme
+.mat-mdc-card {
+  background-color: #2d3748 !important;
+  color: #ffffff !important;
+}
+
+.mat-mdc-tab-group {
+  background-color: #1e1e1e !important;
+}
+
+.mat-mdc-tab-header {
+  background-color: #2d3748 !important;
+}
+
+.mat-mdc-tab-label {
+  color: #a0aec0 !important;
+}
+
+.mat-mdc-tab-label.mat-mdc-tab-label-active {
+  color: #4299e1 !important;
+}
+
+.mat-mdc-tab-header-pagination-chevron {
+  color: #a0aec0 !important;
+}
+
+.mat-mdc-slide-toggle {
+  --mdc-switch-selected-track-color: #4299e1;
+  --mdc-switch-selected-handle-color: #ffffff;
+  --mdc-switch-unselected-track-color: #4a5568;
+  --mdc-switch-unselected-handle-color: #a0aec0;
+}

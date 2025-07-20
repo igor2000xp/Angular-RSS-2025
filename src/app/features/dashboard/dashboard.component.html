@@ -1,0 +1,13 @@
+<div class="dashboard">
+  <div class="tab-content">
+    @if (currentTab(); as tab) {
+      <app-card-list
+        [cards]="getCardsForTab(tab.id)()"
+        [tabId]="tab.id"
+        (cardToggle)="onCardToggle($event)"
+        (deviceToggle)="onDeviceToggle($event)"
+      >
+      </app-card-list>
+    }
+  </div>
+</div>
