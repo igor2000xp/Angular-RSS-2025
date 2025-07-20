@@ -8,45 +8,8 @@ import { CardListComponent } from '../cards/card-list.component';
   selector: 'app-dashboard',
   standalone: true,
   imports: [CommonModule, MatTabsModule, CardListComponent],
-  template: `
-    <div class="dashboard">
-      <div class="tab-content">
-        @if (currentTab(); as tab) {
-          <app-card-list
-            [cards]="getCardsForTab(tab.id)()"
-            [tabId]="tab.id"
-            (cardToggle)="onCardToggle($event)"
-            (deviceToggle)="onDeviceToggle($event)"
-          >
-          </app-card-list>
-        }
-      </div>
-    </div>
-  `,
-  styles: [
-    `
-      :host {
-        width: 100%;
-        .dashboard {
-          height: 100%;
-          background-color: #1e1e1e;
-          overflow-y: auto;
-        }
-
-        .tab-content {
-          padding: 20px;
-          background-color: #1e1e1e;
-          min-height: calc(100vh - 120px);
-        }
-
-        @media (max-width: 768px) {
-          .tab-content {
-            padding: 16px;
-          }
-        }
-      }
-    `,
-  ],
+  templateUrl: './dashboard.component.html',
+  styleUrls: ['./dashboard.component.scss'],
 })
 export class DashboardComponent implements OnInit {
   private dashboardService = inject(DashboardService);
