@@ -13,8 +13,8 @@ import { SensorComponent } from '../devices/sensor.component';
   imports: [CommonModule, MatCardModule, MatSlideToggleModule, DeviceComponent, SensorComponent],
   template: `
     <mat-card class="card">
-      <mat-card-header>
-        <mat-card-title>{{ card().title }}</mat-card-title>
+      <mat-card-header class="card-header">
+        <mat-card-title class="card-title">{{ card().title }}</mat-card-title>
         <div class="card-actions" *ngIf="showGroupToggle()">
           <mat-slide-toggle
             [checked]="hasActiveDevices()"
@@ -26,8 +26,8 @@ import { SensorComponent } from '../devices/sensor.component';
         </div>
       </mat-card-header>
 
-      <mat-card-content>
-        <div class="card-content" [ngClass]="getLayoutClass()">
+      <mat-card-content class="card-content">
+        <div class="items-container" [ngClass]="getLayoutClass()">
           @for (item of card().items; track item.label) {
             @if (item.type === 'device') {
               <app-device [device]="getDevice(item)" (deviceToggle)="onDeviceToggle($event)">
@@ -44,26 +44,21 @@ import { SensorComponent } from '../devices/sensor.component';
     `
       .card {
         margin-bottom: 16px;
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        transition: box-shadow 0.2s ease;
+        border-radius: 8px;
+        background-color: #1f2937;
+        border: 1px solid #374151;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
       }
 
-      .card:hover {
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+      .card-header {
+        padding: 12px 16px 8px 16px;
+        border-bottom: 1px solid #374151;
       }
 
-      mat-card-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 16px 16px 0 16px;
-      }
-
-      mat-card-title {
-        font-size: 18px;
+      .card-title {
+        font-size: 16px;
         font-weight: 600;
-        color: #1976d2;
+        color: #ffffff;
         margin: 0;
       }
 
@@ -72,36 +67,36 @@ import { SensorComponent } from '../devices/sensor.component';
         align-items: center;
       }
 
-      mat-card-content {
-        padding: 16px;
+      .card-content {
+        padding: 12px 16px;
       }
 
-      .card-content {
+      .items-container {
         display: flex;
         flex-direction: column;
         gap: 8px;
       }
 
-      .card-content.horizontal {
+      .items-container.horizontal {
         flex-direction: row;
         flex-wrap: wrap;
-        gap: 16px;
+        gap: 12px;
       }
 
-      .card-content.horizontal app-device,
-      .card-content.horizontal app-sensor {
+      .items-container.horizontal app-device,
+      .items-container.horizontal app-sensor {
         flex: 1;
-        min-width: 200px;
+        min-width: 180px;
       }
 
-      .card-content.single {
+      .items-container.single {
         align-items: center;
       }
 
-      .card-content.single app-device,
-      .card-content.single app-sensor {
+      .items-container.single app-device,
+      .items-container.single app-sensor {
         width: 100%;
-        max-width: 300px;
+        max-width: 280px;
       }
     `,
   ],

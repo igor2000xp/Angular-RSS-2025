@@ -32,52 +32,60 @@ import { ActiveDeviceDirective } from '../../shared/directives/active-device.dir
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 12px 16px;
-        border-radius: 8px;
-        background-color: #f8f9fa;
-        margin-bottom: 8px;
+        padding: 8px 12px;
+        border-radius: 6px;
+        background-color: #374151;
+        margin-bottom: 4px;
         transition: all 0.2s ease;
+        border: 1px solid transparent;
       }
 
       .device-item:hover {
-        background-color: #e9ecef;
+        background-color: #4b5563;
       }
 
       .device-info {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 8px;
       }
 
       .device-icon {
-        font-size: 24px;
-        width: 24px;
-        height: 24px;
-        color: #6c757d;
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+        color: #9ca3af;
         transition: color 0.2s ease;
       }
 
       .device-icon.active {
-        color: #1976d2;
+        color: #3b82f6;
       }
 
       .device-label {
-        font-size: 14px;
+        font-size: 13px;
         font-weight: 500;
-        color: #495057;
+        color: #d1d5db;
       }
 
       .active-device {
-        background-color: #e3f2fd !important;
-        border: 1px solid #1976d2;
+        background-color: #1e3a8a !important;
+        border: 1px solid #3b82f6;
       }
 
       .active-device .device-icon {
-        color: #1976d2;
+        color: #3b82f6;
       }
 
       .active-device .device-label {
-        color: #1976d2;
+        color: #3b82f6;
+      }
+
+      ::ng-deep .mat-mdc-slide-toggle {
+        --mdc-switch-selected-track-color: #3b82f6;
+        --mdc-switch-selected-handle-color: #ffffff;
+        --mdc-switch-unselected-track-color: #4b5563;
+        --mdc-switch-unselected-handle-color: #9ca3af;
       }
     `,
   ],

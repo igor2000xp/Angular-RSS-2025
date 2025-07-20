@@ -25,16 +25,22 @@ import { CardComponent } from './card.component';
     `
       .card-list {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 20px;
-        padding: 20px 0;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 16px;
+        padding: 0;
       }
 
       @media (max-width: 768px) {
         .card-list {
           grid-template-columns: 1fr;
-          gap: 16px;
-          padding: 16px 0;
+          gap: 12px;
+        }
+      }
+
+      @media (min-width: 1200px) {
+        .card-list {
+          grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+          gap: 20px;
         }
       }
     `,
