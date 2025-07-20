@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, input, output } from '@angular/core';
+import { Component, computed, input, OnInit, output } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { Card, Device } from '../../core/models/dashboard.interface';
+import { Card, Device, Sensor } from '../../core/models/dashboard.interface';
 import { DashboardService } from '../../core/services/dashboard.service';
 import { DeviceComponent } from '../devices/device.component';
 import { SensorComponent } from '../devices/sensor.component';
@@ -12,7 +12,7 @@ import { SensorComponent } from '../devices/sensor.component';
   standalone: true,
   imports: [CommonModule, MatCardModule, MatSlideToggleModule, DeviceComponent, SensorComponent],
   template: `
-    <mat-card class="card">
+    <mat-card class="card" *ngIf="card()">
       <mat-card-header>
         <mat-card-title>{{ card().title }}</mat-card-title>
         <div class="card-actions" *ngIf="showGroupToggle()">
@@ -28,12 +28,12 @@ import { SensorComponent } from '../devices/sensor.component';
 
       <mat-card-content>
         <div class="card-content" [ngClass]="getLayoutClass()">
-          @for (item of card().items; track item.label) {
-            @if (item.type === 'device') {
+          @for (item of card().items || []; track item?.label) {
+            @if (item?.type === 'device') {
               <app-device [device]="getDevice(item)" (deviceToggle)="onDeviceToggle($event)">
               </app-device>
-            } @else {
-              <app-sensor [sensor]="item"> </app-sensor>
+            } @else if (item?.type === 'sensor') {
+              <app-sensor [sensor]="getSensor(item)"> </app-sensor>
             }
           }
         </div>
@@ -106,7 +106,7 @@ import { SensorComponent } from '../devices/sensor.component';
     `,
   ],
 })
-export class CardComponent {
+export class CardComponent implements OnInit {
   card = input.required<Card>();
   tabId = input.required<string>();
   cardToggle = output<{ cardId: string; newState: boolean }>();
@@ -114,16 +114,28 @@ export class CardComponent {
 
   constructor(private dashboardService: DashboardService) {}
 
+  ngOnInit(): void {
+    // Ensure proper initialization
+    console.log('Card component initialized');
+  }
+
   showGroupToggle = computed(() => {
-    return this.dashboardService.getControllableDevicesCount(this.card()) >= 2;
+    const currentCard = this.card();
+    if (!currentCard) return false;
+    return this.dashboardService.getControllableDevicesCount(currentCard) >= 2;
   });
 
   hasActiveDevices = computed(() => {
-    return this.dashboardService.hasActiveDevices(this.card());
+    const currentCard = this.card();
+    if (!currentCard) return false;
+    return this.dashboardService.hasActiveDevices(currentCard);
   });
 
   getLayoutClass(): string {
-    switch (this.card().layout) {
+    const currentCard = this.card();
+    if (!currentCard) return 'vertical';
+
+    switch (currentCard.layout) {
       case 'horizontalLayout':
         return 'horizontal';
       case 'singleDevice':
@@ -138,21 +150,31 @@ export class CardComponent {
     return item as Device;
   }
 
+  getSensor(item: any): Sensor {
+    return item as Sensor;
+  }
+
   onGroupToggle(newState: boolean): void {
+    const currentCard = this.card();
+    if (!currentCard) return;
+
     this.cardToggle.emit({
-      cardId: this.card().id,
+      cardId: currentCard.id,
       newState,
     });
   }
 
   onDeviceToggle(event: { device: Device; newState: boolean }): void {
-    const deviceIndex = this.card().items.findIndex(
-      item => item.type === 'device' && item.label === event.device.label
+    const currentCard = this.card();
+    if (!currentCard || !currentCard.items) return;
+
+    const deviceIndex = currentCard.items.findIndex(
+      item => item && item.type === 'device' && item.label === event.device.label
     );
 
     if (deviceIndex !== -1) {
       this.deviceToggle.emit({
-        cardId: this.card().id,
+        cardId: currentCard.id,
         deviceIndex,
         newState: event.newState,
       });

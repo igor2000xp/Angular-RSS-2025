@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, input, output } from '@angular/core';
+import { Component, input, OnInit, output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
@@ -172,9 +172,14 @@ import { MatSidenavModule } from '@angular/material/sidenav';
     `,
   ],
 })
-export class SidebarComponent {
+export class SidebarComponent implements OnInit {
   isExpanded = input<boolean>(true);
   sidebarToggle = output<void>();
+
+  ngOnInit(): void {
+    // Ensure proper initialization
+    console.log('Sidebar component initialized');
+  }
 
   toggleSidebar(): void {
     this.sidebarToggle.emit();

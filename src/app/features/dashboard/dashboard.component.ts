@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, OnInit } from '@angular/core';
 import { MatTabsModule } from '@angular/material/tabs';
 import { DashboardService } from '../../core/services/dashboard.service';
 import { CardListComponent } from '../cards/card-list.component';
@@ -67,11 +67,16 @@ import { CardListComponent } from '../cards/card-list.component';
     `,
   ],
 })
-export class DashboardComponent {
+export class DashboardComponent implements OnInit {
   private dashboardService = inject(DashboardService);
 
   tabs = this.dashboardService.getTabs();
   selectedTabIndex = computed(() => 0); // Default to first tab
+
+  ngOnInit(): void {
+    // Ensure proper initialization
+    console.log('Dashboard component initialized');
+  }
 
   onTabChange(index: number): void {
     // Handle tab change if needed
