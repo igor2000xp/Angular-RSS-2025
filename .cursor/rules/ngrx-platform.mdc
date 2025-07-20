@@ -1,0 +1,1465 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+
+TITLE: Injecting NgRx Store and Dispatching Actions in Angular Component
+DESCRIPTION: This snippet demonstrates how to inject the NgRx `Store` service into an Angular component's constructor. It shows how to select a specific slice of the state (`count`) as an Observable and how to dispatch actions (`increment`, `decrement`, `reset`) to modify that state, connecting UI interactions to the NgRx store.
+SOURCE: https://github.com/ngrx/platform/blob/main/projects/www/src/app/pages/guide/store/index.md#_snippet_8
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+import { Component } from '@angular/core';
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
+import { increment, decrement, reset } from '../counter.actions';
+
+@Component({
+  selector: 'app-my-counter',
+  templateUrl: './my-counter.component.html',
+})
+export class MyCounterComponent {
+  count$: Observable<number>;
+
+  constructor(private store: Store<{ count: number }>) {
+    this.count$ = store.select('count');
+  }
+
+  increment() {
+    this.store.dispatch(increment());
+  }
+
+  decrement() {
+    this.store.dispatch(decrement());
+  }
+
+  reset() {
+    this.store.dispatch(reset());
+  }
+}
+```
+
+---
+
+TITLE: Defining Reactive Method for Loading Books by Query in NgRx SignalStore (TypeScript)
+DESCRIPTION: This snippet demonstrates how to define a reactive method `loadByQuery` within an NgRx SignalStore using `rxMethod`. It utilizes RxJS operators like `debounceTime` and `distinctUntilChanged` for input throttling, `tap` to update loading state, and `switchMap` to call `BooksService.getByQuery`. The `tapResponse` operator handles success and error responses, patching the store state with fetched books or managing errors.
+SOURCE: https://github.com/ngrx/platform/blob/main/projects/www/src/app/pages/guide/signals/signal-store/index.md#_snippet_9
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+import { computed, inject } from '@angular/core';
+import {
+  debounceTime,
+  distinctUntilChanged,
+  pipe,
+  switchMap,
+  tap,
+} from 'rxjs';
+import { patchState, signalStore /* ... */ } from '@ngrx/signals';
+import { rxMethod } from '@ngrx/signals/rxjs-interop';
+import { tapResponse } from '@ngrx/operators';
+import { Book } from './book.model';
+import { BooksService }s from './books.service';
+
+type BooksState = {
+  /* ... */
+};
+
+const initialState: BooksState = {
+  /* ... */
+};
+
+export const BooksStore = signalStore(
+  withState(initialState),
+  withComputed(/* ... */),
+  withMethods((store, booksService = inject(BooksService)) => ({
+    /* ... */
+    // 👇 Defining a method to load books by query.
+    loadByQuery: rxMethod<string>(
+      pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        tap(() => patchState(store, { isLoading: true })),
+        switchMap((query) => {
+          return booksService.getByQuery(query).pipe(
+            tapResponse({
+              next: (books) =>
+                patchState(store, { books, isLoading: false }),
+              error: (err) => {
+                patchState(store, { isLoading: false });
+                console.error(err);
+              },
+            })
+          );
+        })
+      )
+    ),
+  }))
+);
+```
+
+---
+
+TITLE: Initializing Root Store with Standalone API - TypeScript
+DESCRIPTION: This code shows how to bootstrap an Angular standalone application and provide an empty NgRx store using `provideStore()` in the `providers` array. It establishes the root state for applications built without traditional NgModules.
+SOURCE: https://github.com/ngrx/platform/blob/main/projects/www/src/app/pages/guide/store/reducers.md#_snippet_7
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+import { bootstrapApplication } from '@angular/platform-browser';
+import { provideStore } from '@ngrx/store';
+
+import { AppComponent } from './app.component';
+
+bootstrapApplication(AppComponent, {
+  providers: [provideStore()],
+});
+```
+
+---
+
+TITLE: Initializing Root Store with Standalone API - Angular/NgRx
+DESCRIPTION: This code shows how to initialize the root NgRx store using Angular's Standalone API. It leverages `provideStore()` within the `bootstrapApplication` call to set up the global state management, providing an empty root state for the application.
+SOURCE: https://github.com/ngrx/platform/blob/main/projects/ngrx.io/content/guide/store/reducers.md#_snippet_7
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+import { bootstrapApplication } from '@angular/platform-browser';
+import { provideStore } from '@ngrx/store';
+
+import { AppComponent } from './app.component';
+
+bootstrapApplication(AppComponent, {
+  providers: [
+    provideStore()
+  ],
+});
+```
+
+---
+
+TITLE: Dispatching an NgRx Login Action in a Component (TypeScript)
+DESCRIPTION: This TypeScript snippet demonstrates how to dispatch the previously defined `login` action within a component's `onSubmit` method. It calls `store.dispatch()` with the `login` action creator, passing the `username` and `password` as the action's payload to trigger the state update.
+SOURCE: https://github.com/ngrx/platform/blob/main/projects/ngrx.io/content/guide/store/actions.md#_snippet_4
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+  onSubmit(username: string, password: string) {
+    store.dispatch(login({ username: username, password: password }));
+  }
+```
+
+---
+
+TITLE: Using EntityCollectionService in an Angular Component (TypeScript)
+DESCRIPTION: This TypeScript snippet demonstrates how an Angular component interacts with an `EntityCollectionService`. It shows the constructor injecting `EntityCollectionServiceFactory` to create a service instance for 'Hero' entities and setting up observable properties (`filteredHeroes$`, `loading$`). It also includes methods for common CRUD operations like fetching all heroes (`getAll`), adding (`add`), deleting (`delete`), and updating (`update`) a hero, all performed via the `heroService` instance.
+SOURCE: https://github.com/ngrx/platform/blob/main/projects/ngrx.io/content/guide/data/entity-collection-service.md#_snippet_0
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+constructor(EntityCollectionServiceFactory: EntityCollectionServiceFactory) {
+  this.heroService = EntityCollectionServiceFactory.create<Hero>('Hero');
+  this.filteredHeroes$ = this.heroService.filteredEntities$;
+  this.loading$ = this.heroService.loading$;
+}
+
+getHeroes() { this.heroService.getAll(); }
+add(hero: Hero) { this.heroService.add(hero); }
+deleteHero(hero: Hero) { this.heroService.delete(hero.id); }
+update(hero: Hero) { this.heroService.update(hero); }
+```
+
+---
+
+TITLE: Correct: `createFeatureSelector` with 'select' prefix (TypeScript)
+DESCRIPTION: This snippet correctly uses `createFeatureSelector` to define a feature selector, ensuring its name starts with 'select' and follows proper casing.
+SOURCE: https://github.com/ngrx/platform/blob/main/projects/www/src/app/pages/guide/eslint-plugin/rules/prefix-selectors-with-select.md#_snippet_7
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+const selectFeature = createFeatureSelector<FeatureState>(featureKey);
+```
+
+---
+
+TITLE: Integrating withEntities with NgRx SignalStore (TypeScript)
+DESCRIPTION: This snippet demonstrates how to integrate the withEntities feature into an NgRx SignalStore. It defines a Todo entity type and then uses withEntities<Todo>() to automatically add entity management capabilities, including ids, entityMap, and entities signals, to the TodosStore.
+SOURCE: https://github.com/ngrx/platform/blob/main/projects/ngrx.io/content/guide/signals/signal-store/entity-management.md#_snippet_0
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+import { computed } from '@angular/core';
+import { signalStore } from '@ngrx/signals';
+import { withEntities } from '@ngrx/signals/entities';
+
+type Todo = {
+  id: number;
+  text: string;
+  completed: boolean;
+};
+
+export const TodosStore = signalStore(
+  withEntities<Todo>()
+);
+```
+
+---
+
+TITLE: Using NgRx Push Pipe in HTML Template
+DESCRIPTION: This HTML snippet demonstrates the usage of the `ngrxPush` pipe as a direct replacement for the `async` pipe. It shows binding an observable (`number$`) to the view in various contexts: a paragraph, an `ng-container` with `*ngIf`, and as an input to a child component. The `ngrxPush` pipe automatically schedules change detection, making it suitable for zone-less applications.
+SOURCE: https://github.com/ngrx/platform/blob/main/projects/www/src/app/pages/guide/component/push.md#_snippet_2
+
+LANGUAGE: HTML
+CODE:
+
+```
+<p>{{ number$ | ngrxPush }}</p>
+
+<ng-container *ngIf="number$ | ngrxPush as n">{{ n }}</ng-container>
+
+<app-number [number]="number$ | ngrxPush"></app-number>
+```
+
+---
+
+TITLE: Using Async Pipe with NgRx Store - TypeScript (Correct)
+DESCRIPTION: This snippet shows the preferred and correct method for handling NgRx store selections. By assigning the observable to a property (e.g., `selectedItems$`) and using the `async` pipe in the template, Angular automatically manages subscriptions and unsubscriptions, preventing memory leaks and improving performance.
+SOURCE: https://github.com/ngrx/platform/blob/main/projects/ngrx.io/content/guide/eslint-plugin/rules/no-store-subscription.md#_snippet_1
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+// in code
+selectedItems$ = this.store.select(selectedItems)
+
+// in template
+{{ selectedItems$ | async }}
+```
+
+---
+
+TITLE: Implementing SignalStore Lifecycle Hooks with `onInit` and `onDestroy` (Factory Function Signature) in TypeScript
+DESCRIPTION: This snippet illustrates the second signature of `withHooks` in `@ngrx/signals`, which uses a factory function. This allows sharing code and using injected dependencies like `Logger` within both `onInit` and `onDestroy` hooks. The `onInit` sets up an interval, and `onDestroy` clears it while logging the count using the injected logger.
+SOURCE: https://github.com/ngrx/platform/blob/main/projects/ngrx.io/content/guide/signals/signal-store/lifecycle-hooks.md#_snippet_1
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+export const CounterStore = signalStore(
+  /* ... */
+  withHooks((store) => {
+    const logger = inject(Logger);
+    let interval = 0;
+
+    return {
+      onInit() {
+        interval = setInterval(() => store.increment(), 2_000);
+      },
+      onDestroy() {
+        logger.info('count on destroy', store.count());
+        clearInterval(interval);
+      },
+    };
+  }),
+);
+```
+
+---
+
+TITLE: Registering Feature State with Standalone API Routes - NgRx
+DESCRIPTION: This snippet shows how to register a feature state directly within Angular router's `providers` array for standalone components. It uses `provideState` to associate `scoreboardFeatureKey` and `scoreboardReducer` with a specific route, enabling lazy loading of the feature state.
+SOURCE: https://github.com/ngrx/platform/blob/main/projects/ngrx.io/content/guide/store/reducers.md#_snippet_11
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+import { Route } from '@angular/router';
+import { provideState } from '@ngrx/store';
+
+import { scoreboardFeatureKey, scoreboardReducer } from './reducers/scoreboard.reducer';
+
+export const routes: Route[] = [
+  {
+    path: 'scoreboard',
+    providers: [
+      provideState({ name: scoreboardFeatureKey, reducer: scoreboardReducer })
+    ]
+  }
+];
+```
+
+---
+
+TITLE: Initializing Root Store with NgModules - Angular/NgRx
+DESCRIPTION: This snippet demonstrates how to initialize the root NgRx store in an Angular application using NgModules. It imports `StoreModule` and calls `forRoot({})` to set up an empty root state, serving as the foundation for the application's global state.
+SOURCE: https://github.com/ngrx/platform/blob/main/projects/ngrx.io/content/guide/store/reducers.md#_snippet_6
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+import { NgModule } from '@angular/core';
+import { StoreModule } from '@ngrx/store';
+
+@NgModule({
+  imports: [
+    StoreModule.forRoot({})
+  ],
+})
+export class AppModule {}
+```
+
+---
+
+TITLE: Incorrect: Manual Store Subscription in ngOnInit (TypeScript)
+DESCRIPTION: This snippet demonstrates an incorrect way to subscribe to an NgRx store selection within `ngOnInit`. Manual subscriptions can lead to memory leaks if not properly unsubscribed, and are generally discouraged in favor of the `async` pipe for managing observable subscriptions in templates.
+SOURCE: https://github.com/ngrx/platform/blob/main/projects/www/src/app/pages/guide/eslint-plugin/rules/no-store-subscription.md#_snippet_0
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+ngOnInit() {
+  this.store.select(selectedItems).subscribe(items => {
+    this.items = items;
+  })
+}
+```
+
+---
+
+TITLE: Creating a SignalStore with Initial State (TypeScript)
+DESCRIPTION: This snippet demonstrates how to create an NgRx SignalStore using `signalStore` and `withState`. It defines the `BookSearchState` type and an `initialState` object, then uses `withState` to add these state slices to the store. This establishes the initial structure and values for the store's state properties.
+SOURCE: https://github.com/ngrx/platform/blob/main/projects/ngrx.io/content/guide/signals/signal-store/index.md#_snippet_0
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+import { signalStore, withState } from '@ngrx/signals';
+import { Book } from './book';
+
+type BookSearchState = {
+  books: Book[];
+  isLoading: boolean;
+  filter: { query: string; order: 'asc' | 'desc' };
+};
+
+const initialState: BookSearchState = {
+  books: [],
+  isLoading: false,
+  filter: { query: '', order: 'asc' },
+};
+
+export const BookSearchStore = signalStore(
+  withState(initialState)
+);
+```
+
+---
+
+TITLE: Defining Scoreboard Actions in NgRx TypeScript
+DESCRIPTION: This snippet defines a set of NgRx actions for a scoreboard feature. It uses `createAction` to define unique action types and `props` to include additional data (like `Game` for `setScores`). These actions represent events that can modify the scoreboard state, such as scoring for home/away teams, resetting scores, or setting specific scores.
+SOURCE: https://github.com/ngrx/platform/blob/main/projects/ngrx.io/content/guide/store/reducers.md#_snippet_0
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+import { createAction, props } from '@ngrx/store';
+
+export const homeScore = createAction('[Scoreboard Page] Home Score');
+export const awayScore = createAction('[Scoreboard Page] Away Score');
+export const resetScore = createAction('[Scoreboard Page] Score Reset');
+export const setScores = createAction('[Scoreboard Page] Set Scores', props<{game: Game}>());
+```
+
+---
+
+TITLE: Handling State Changes with Reducers in NgRx SignalStore
+DESCRIPTION: This snippet demonstrates how to use `withReducer` and `on` functions within an NgRx `signalStore` to manage state changes in response to dispatched events. It shows how to map different events (e.g., `bookSearchEvents.opened`, `booksApiEvents.loadedSuccess`) to specific reducer logic that updates the store's state.
+SOURCE: https://github.com/ngrx/platform/blob/main/projects/ngrx.io/content/guide/signals/signal-store/events.md#_snippet_4
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+import { signalStore, withState } from '@ngrx/signals';
+import { on, withReducer } from '@ngrx/signals/events';
+import { bookSearchEvents } from './book-search-events';
+import { booksApiEvents } from './books-api-events';
+import { Book } from './book';
+
+type State = { query: string; books: Book[]; isLoading: boolean };
+
+export const BookSearchStore = signalStore(
+  withState<State>({ query: '', books: [], isLoading: false }),
+  withReducer(
+    on(bookSearchEvents.opened, () => ({ isLoading: true })),
+    on(
+      bookSearchEvents.queryChanged,
+      ({ payload: query }) => ({ query, isLoading: true })
+    ),
+    on(
+      booksApiEvents.loadedSuccess,
+      ({ payload: books }) => ({ books, isLoading: false })
+    ),
+    on(booksApiEvents.loadedFailure, () => ({ isLoading: false }))
+  )
+);
+```
+
+---
+
+TITLE: Installing NgRx Store with ng add (Minimal Setup)
+DESCRIPTION: This command installs NgRx Store using the Angular CLI's `ng add` feature, which automates the setup by updating `package.json`, running `npm install`, and configuring `StoreModule.forRoot({})` in the application's root module or providing `provideStore()` for standalone applications. It provides a minimal setup for root state management.
+SOURCE: https://github.com/ngrx/platform/blob/main/projects/www/src/app/pages/guide/store/install.md#_snippet_0
+
+LANGUAGE: sh
+CODE:
+
+```
+ng add @ngrx/store@latest
+```
+
+---
+
+TITLE: Updating NgRx Packages with Angular CLI (Shell)
+DESCRIPTION: This command updates NgRx packages to version 18 using the Angular CLI's `ng update` command. It automatically runs migration schematics to smooth the upgrade process by fixing some breaking changes.
+SOURCE: https://github.com/ngrx/platform/blob/main/projects/ngrx.io/content/guide/migration/v18.md#_snippet_0
+
+LANGUAGE: sh
+CODE:
+
+```
+ng update @ngrx/store@18
+```
+
+---
+
+TITLE: Displaying NgRx Store State in Angular Template
+DESCRIPTION: This Angular template expression is used to display the current value of an NgRx store's 'count$' observable. The 'async' pipe automatically subscribes to the observable and unsubscribes when the component is destroyed, preventing memory leaks and simplifying reactive programming.
+SOURCE: https://github.com/ngrx/platform/blob/main/projects/ngrx.io/content/examples/store/src/app/my-counter/my-counter.component.html#_snippet_0
+
+LANGUAGE: HTML
+CODE:
+
+```
+{{ count$ | async }}
+```
+
+---
+
+TITLE: Creating NgRx Reducer Function with createReducer - TypeScript
+DESCRIPTION: This snippet demonstrates how to create an NgRx reducer function using `createReducer`. It defines state transitions for a scoreboard, handling actions like `homeScore`, `awayScore`, `resetScore`, and `setScores` immutably by returning new state objects using the spread operator. It requires `initialState` and `ScoreboardPageActions` to be defined elsewhere.
+SOURCE: https://github.com/ngrx/platform/blob/main/projects/ngrx.io/content/guide/store/reducers.md#_snippet_3
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+export const scoreboardReducer = createReducer(
+  initialState,
+  on(ScoreboardPageActions.homeScore, state => ({ ...state, home: state.home + 1 })),
+  on(ScoreboardPageActions.awayScore, state => ({ ...state, away: state.away + 1 })),
+  on(ScoreboardPageActions.resetScore, state => ({ home: 0, away: 0 })),
+  on(ScoreboardPageActions.setScores, (state, { game }) => ({ home: game.home, away: game.away }))
+);
+```
+
+---
+
+TITLE: Implementing a Counter Component with NgRx SignalState in Angular
+DESCRIPTION: This comprehensive example demonstrates using SignalState within an Angular component to manage a simple counter. It shows initializing state, displaying its value in the template, and updating it via `patchState` in component methods, illustrating a practical application.
+SOURCE: https://github.com/ngrx/platform/blob/main/projects/ngrx.io/content/guide/signals/signal-state.md#_snippet_7
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { signalState, patchState } from '@ngrx/signals';
+
+@Component({
+  selector: 'ngrx-counter',
+  template: `
+    &lt;p&gt;Count: {{ state.count() }}&lt;/p&gt;
+
+    &lt;button (click)="increment()"&gt;Increment&lt;/button&gt;
+    &lt;button (click)="decrement()"&gt;Decrement&lt;/button&gt;
+    &lt;button (click)="reset()"&gt;Reset&lt;/button&gt;
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class Counter {
+  readonly state = signalState({ count: 0 });
+
+  increment(): void {
+    patchState(this.state, (state) => ({ count: state.count + 1 }));
+  }
+
+  decrement(): void {
+    patchState(this.state, (state) => ({ count: state.count - 1 }));
+  }
+
+  reset(): void {
+    patchState(this.state, { count: 0 });
+  }
+}
+```
+
+---
+
+TITLE: Defining NgRx Actions (Correct Hygiene) - TypeScript
+DESCRIPTION: This snippet demonstrates correct action hygiene by adhering to the `[Source] Event` naming convention. Action types explicitly include their source (e.g., `[Customers Page]`, `[Customers API]`), making them unique, descriptive, and clear about their origin and the event they represent.
+SOURCE: https://github.com/ngrx/platform/blob/main/projects/ngrx.io/content/guide/eslint-plugin/rules/good-action-hygiene.md#_snippet_1
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+export const customersRefresh = createAction(
+  '[Customers Page] Refresh clicked'
+);
+export const customersLoadedSuccess = createAction(
+  '[Customers API] Customers Loaded Success'
+);
+```
+
+---
+
+TITLE: Defining Asynchronous Side Effect Methods in NgRx SignalStore (TypeScript)
+DESCRIPTION: This snippet shows how to define asynchronous methods within an NgRx SignalStore using `withMethods` to perform side effects. It demonstrates injecting a service (`BooksService`) within the `withMethods` factory and using an `async`/`await` pattern to load data, updating the store's `isLoading` and `books` state before and after the asynchronous operation.
+SOURCE: https://github.com/ngrx/platform/blob/main/projects/ngrx.io/content/guide/signals/signal-store/index.md#_snippet_8
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+import { computed, inject } from '@angular/core';
+import { patchState, signalStore, /* ... */ } from '@ngrx/signals';
+import { BooksService } from './books-service';
+import { Book } from './book';
+
+type BookSearchState = { /* ... */ };
+
+const initialState: BookSearchState = { /* ... */ };
+
+export const BookSearchStore = signalStore(
+  withState(initialState),
+  withComputed(/* ... */),
+  // 👇 `BooksService` can be injected within the `withMethods` factory.
+  withMethods((store, booksService = inject(BooksService)) => ({
+    /* ... */
+    // 👇 Defining a method to load all books.
+    async loadAll(): Promise<void> {
+      patchState(store, { isLoading: true });
+
+      const books = await booksService.getAll();
+      patchState(store, { books, isLoading: false });
+    },
+  }))
+);
+```
+
+---
+
+TITLE: Defining State Update Methods in NgRx SignalStore (TypeScript)
+DESCRIPTION: This snippet demonstrates how to define methods within an NgRx SignalStore using `withMethods` to update the store's state. It shows `updateQuery` and `updateOrder` methods utilizing `patchState` to modify the `filter` property of the state. The `withMethods` factory receives the store instance, allowing access to its current state.
+SOURCE: https://github.com/ngrx/platform/blob/main/projects/ngrx.io/content/guide/signals/signal-store/index.md#_snippet_6
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+import { computed } from '@angular/core';
+import {
+  patchState,
+  signalStore,
+  withComputed,
+  withMethods,
+  withState,
+} from '@ngrx/signals';
+import { Book } from './book';
+
+type BookSearchState = { /* ... */ };
+
+const initialState: BookSearchState = { /* ... */ };
+
+export const BookSearchStore = signalStore(
+  withState(initialState),
+  withComputed(/* ... */),
+  // 👇 Accessing a store instance with previously defined state signals,
+  // properties, and methods.
+  withMethods((store) => ({
+    updateQuery(query: string): void {
+      // 👇 Updating state using the `patchState` function.
+      patchState(store, (state) => ({ filter: { ...state.filter, query } }));
+    },
+    updateOrder(order: 'asc' | 'desc'): void {
+      patchState(store, (state) => ({ filter: { ...state.filter, order } }));
+    },
+  }))
+);
+```
+
+---
+
+TITLE: Integrating Book Search Store into Angular Component (TypeScript)
+DESCRIPTION: This Angular component, `BookSearch`, demonstrates how to consume the `BookSearchStore`. It injects the store and uses its state signals (`filter.query`, `filter.order`, `sortedBooks`, `isLoading`, `booksCount`) and methods (`updateQuery`, `updateOrder`, `loadByQuery`) to manage UI interactions and data display. It depends on `BookFilter`, `BookList` components, and `BookSearchStore`.
+SOURCE: https://github.com/ngrx/platform/blob/main/projects/ngrx.io/content/guide/signals/signal-store/index.md#_snippet_11
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { BookFilter } from './book-filter';
+import { BookList } from './book-list';
+import { BooksStore } from './books.store';
+
+@Component({
+  imports: [BookFilter, BookList],
+  template: `
+    <h1>Books ({{ store.booksCount() }})</h1>
+
+    <ngrx-book-filter
+      [query]="store.filter.query()"
+      [order]="store.filter.order()"
+      (queryChange)="store.updateQuery($event)"
+      (orderChange)="store.updateOrder($event)"
+    />
+
+    <ngrx-book-list
+      [books]="store.sortedBooks()"
+      [isLoading]="store.isLoading()"
+    />
+  `,
+  providers: [BookSearchStore],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class BookSearch {
+  readonly store = inject(BookSearchStore);
+
+  constructor() {
+    const query = this.store.filter.query;
+    // 👇 Re-fetch books whenever the value of query signal changes.
+    this.store.loadByQuery(query);
+  }
+}
+```
+
+---
+
+TITLE: Installing NgRx Router Store with ng add
+DESCRIPTION: This command uses the Angular CLI's `ng add` schematic to automatically install the `@ngrx/router-store` package, update `package.json`, run `npm install`, and configure `provideRouterStore()` in `app.config.ts` or a specified module. Optional flags allow customization of the target module and project.
+SOURCE: https://github.com/ngrx/platform/blob/main/projects/www/src/app/pages/guide/router-store/install.md#_snippet_0
+
+LANGUAGE: sh
+CODE:
+
+```
+ng add @ngrx/router-store@latest
+```
+
+---
+
+TITLE: Composing Multiple State Slices with NgRx createSelector (TypeScript)
+DESCRIPTION: This example illustrates how to use `createSelector` with multiple input selectors (`selectUser`, `selectAllBooks`) to derive a new piece of state (`selectVisibleBooks`). The projector function filters `allBooks` based on the `selectedUser`, demonstrating how to combine different parts of the state to create a computed, up-to-date view.
+SOURCE: https://github.com/ngrx/platform/blob/main/projects/www/src/app/pages/guide/store/selectors.md#_snippet_1
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+import { createSelector } from '@ngrx/store';
+
+export interface User {
+  id: number;
+  name: string;
+}
+
+export interface Book {
+  id: number;
+  userId: number;
+  name: string;
+}
+
+export interface AppState {
+  selectedUser: User;
+  allBooks: Book[];
+}
+
+export const selectUser = (state: AppState) => state.selectedUser;
+export const selectAllBooks = (state: AppState) => state.allBooks;
+
+export const selectVisibleBooks = createSelector(
+  selectUser,
+  selectAllBooks,
+  (selectedUser: User, allBooks: Book[]) => {
+    if (selectedUser && allBooks) {
+      return allBooks.filter(
+        (book: Book) => book.userId === selectedUser.id
+      );
+    } else {
+      return allBooks;
+    }
+  }
+);
+```
+
+---
+
+TITLE: Correcting Action Immutability in NgRx Action Creator (TypeScript)
+DESCRIPTION: This snippet shows the correct approach to ensure action immutability. The `id` is generated and included directly in the action's payload when the action is created, rather than modifying the action object within the reducer.
+SOURCE: https://github.com/ngrx/platform/blob/main/projects/ngrx.io/content/guide/store/configuration/runtime-checks.md#_snippet_4
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+export const addTodo = createAction(
+  '[Todo List] Add Todo',
+  (description: string) => ({ id: generateUniqueId(), description })
+);
+export const reducer = createReducer(
+  initialState,
+  on(addTodo, (state, { todo }) => ({
+    ...state,
+    todos: [...state.todos, todo],
+  }))
+);
+```
+
+---
+
+TITLE: Handling Movie Loading with mapResponse in NgRx Effects (TypeScript)
+DESCRIPTION: This NgRx effect, `loadMovies`, demonstrates the use of the `mapResponse` operator to handle the outcome of an API call. It listens for `MoviesPageActions.opened`, then uses `exhaustMap` to call `moviesService.getAll()`. The `mapResponse` operator then dispatches `MoviesApiActions.moviesLoadedSuccess` on successful data retrieval or `MoviesApiActions.moviesLoadedFailure` if an error occurs, providing a streamlined way to manage success and error states.
+SOURCE: https://github.com/ngrx/platform/blob/main/projects/www/src/app/pages/guide/operators/operators.md#_snippet_3
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+export const loadMovies = createEffect(
+  (
+    actions$ = inject(Actions),
+    moviesService = inject(MoviesService)
+  ) => {
+    return actions$.pipe(
+      ofType(MoviesPageActions.opened),
+      exhaustMap(() =>
+        moviesService.getAll().pipe(
+          mapResponse({
+            next: (movies) =>
+              MoviesApiActions.moviesLoadedSuccess({ movies }),
+            error: (error: { message: string }) =>
+              MoviesApiActions.moviesLoadedFailure({
+                errorMsg: error.message,
+              }),
+          })
+        )
+      )
+    );
+  },
+  { functional: true }
+);
+```
+
+---
+
+TITLE: Handling API Calls with RxMethod and tapResponse in NgRx
+DESCRIPTION: This snippet illustrates a practical application of `rxMethod` for fetching data from an API. It defines `loadBookById` to fetch a book based on a `selectedBookId` signal, using `filter` to prevent unnecessary calls and `concatMap` to handle asynchronous API requests. It integrates `tapResponse` from `@ngrx/operators` for robust error handling and state updates, demonstrating a common pattern for reactive data loading.
+SOURCE: https://github.com/ngrx/platform/blob/main/projects/ngrx.io/content/guide/signals/rxjs-integration.md#_snippet_4
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+import { Component, inject, signal } from '@angular/core';
+import { concatMap, filter, pipe } from 'rxjs';
+import { rxMethod } from '@ngrx/signals/rxjs-interop';
+import { tapResponse } from '@ngrx/operators';
+import { BooksService } from './books-service';
+import { Book } from './book';
+
+@Component({ /* ... */ })
+export class BookList {
+  readonly #booksService = inject(BooksService);
+
+  readonly bookMap = signal<Record<string, Book>>({});
+  readonly selectedBookId = signal<string | null>(null);
+
+  readonly loadBookById = rxMethod<string | null>(
+    pipe(
+      filter((id) => !!id && !this.bookMap()[id]),
+      concatMap((id) => {
+        return this.#booksService.getById(id).pipe(
+          tapResponse({
+            next: (book) => this.addBook(book),
+            error: console.error,
+          })
+        );
+      })
+    )
+  );
+
+  constructor() {
+    // 👇 Load book by id whenever the `selectedBookId` value changes.
+    this.loadBookById(this.selectedBookId);
+  }
+
+  addBook(book: Book): void {
+    this.bookMap.update((bookMap) => ({ ...bookMap, [book.id]: book }));
+  }
+}
+```
+
+---
+
+TITLE: Handling Errors in NgRx Effects for Movie Loading in TypeScript
+DESCRIPTION: This effect demonstrates robust error handling for the movie loading process. It listens for the '[Movies Page] Load Movies' action and fetches movies. If `MoviesService#getAll()` encounters an error, the `catchError` operator dispatches a '[Movies API] Movies Loaded Error' action, ensuring the effect stream continues to run without terminating.
+SOURCE: https://github.com/ngrx/platform/blob/main/projects/www/src/app/pages/guide/effects/index.md#_snippet_4
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+import { Injectable, inject } from '@angular/core';
+import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { of } from 'rxjs';
+import { map, exhaustMap, catchError } from 'rxjs/operators';
+import { MoviesService } from './movies.service';
+
+@Injectable()
+export class MoviesEffects {
+  private actions$ = inject(Actions);
+  private moviesService = inject(MoviesService);
+
+  loadMovies$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType('[Movies Page] Load Movies'),
+      exhaustMap(() =>
+        this.moviesService.getAll().pipe(
+          map((movies) => ({
+            type: '[Movies API] Movies Loaded Success',
+            payload: movies,
+          })),
+          catchError(() =>
+            of({ type: '[Movies API] Movies Loaded Error' })
+          )
+        )
+      )
+    );
+  });
+}
+```
+
+---
+
+TITLE: Handling Errors in NgRx Effects (Movies)
+DESCRIPTION: This effect demonstrates robust error handling for movie loading. It listens for `[Movies Page] Load Movies`, fetches movies via `MoviesService`, and on success dispatches `[Movies API] Movies Loaded Success`. If an error occurs during fetching, it dispatches a `[Movies API] Movies Loaded Error` action, ensuring the effect's observable stream continues to run.
+SOURCE: https://github.com/ngrx/platform/blob/main/projects/ngrx.io/content/guide/effects/index.md#_snippet_4
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+import { Injectable, inject } from '@angular/core';
+import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { of } from 'rxjs';
+import { map, exhaustMap, catchError } from 'rxjs/operators';
+import { MoviesService } from './movies.service';
+
+@Injectable()
+export class MoviesEffects {
+  private actions$ = inject(Actions);
+  private moviesService = inject(MoviesService);
+
+  loadMovies$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType('[Movies Page] Load Movies'),
+      exhaustMap(() => this.moviesService.getAll()
+        .pipe(
+          map(movies => ({ type: '[Movies API] Movies Loaded Success', payload: movies })),
+          catchError(() => of({ type: '[Movies API] Movies Loaded Error' }))
+        )
+      )
+    );
+  });
+}
+```
+
+---
+
+TITLE: Providing and Injecting NgRx SignalStore Locally (Angular)
+DESCRIPTION: This snippet shows how to provide an NgRx SignalStore at the component level by including it in the `providers` array of an Angular component. The store instance is then injected into the component using the `inject` function, making it available for managing local or component-specific state.
+SOURCE: https://github.com/ngrx/platform/blob/main/projects/www/src/app/pages/guide/signals/signal-store/index.md#_snippet_2
+
+LANGUAGE: Angular
+CODE:
+
+```
+import { Component, inject } from '@angular/core';
+import { BooksStore } from './books.store';
+
+@Component({
+  /* ... */
+  // 👇 Providing `BooksStore` at the component level.
+  providers: [BooksStore],
+})
+export class BooksComponent {
+  readonly store = inject(BooksStore);
+}
+```
+
+---
+
+TITLE: Implementing Book Store with NgRx SignalState in TypeScript
+DESCRIPTION: This snippet defines a `BooksStore` service using NgRx SignalState to manage book data and loading state. It utilizes `signalState` for reactive state, `rxMethod` for handling side effects (fetching books via `BooksService`), and `patchState` to update the state based on API responses, including error handling and finalization.
+SOURCE: https://github.com/ngrx/platform/blob/main/projects/www/src/app/pages/guide/signals/signal-state.md#_snippet_8
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+import { inject, Injectable } from '@angular/core';
+import { exhaustMap, pipe, tap } from 'rxjs';
+import { signalState, patchState } from '@ngrx/signals';
+import { rxMethod } from '@ngrx/signals/rxjs-interop';
+import { tapResponse } from '@ngrx/operators';
+import { BooksService } from './books.service';
+import { Book } from './book.model';
+
+type BooksState = { books: Book[]; isLoading: boolean };
+
+const initialState: BooksState = {
+  books: [],
+  isLoading: false,
+};
+
+@Injectable()
+export class BooksStore {
+  readonly #booksService = inject(BooksService);
+  readonly #state = signalState(initialState);
+
+  readonly books = this.#state.books;
+  readonly isLoading = this.#state.isLoading;
+
+  readonly loadBooks = rxMethod<void>(
+    pipe(
+      tap(() => patchState(this.#state, { isLoading: true })),
+      exhaustMap(() => {
+        return this.#booksService.getAll().pipe(
+          tapResponse({
+            next: (books) => patchState(this.#state, { books }),
+            error: console.error,
+            finalize: () =>
+              patchState(this.#state, { isLoading: false }),
+          })
+        );
+      })
+    )
+  );
+}
+```
+
+---
+
+TITLE: Testing Auth Guard with NgRx MockStore in Angular
+DESCRIPTION: This test snippet demonstrates how to unit test an Angular guard (`AuthGuard`) that depends on the NgRx Store using `provideMockStore()`. It initializes the `MockStore` with an `initialState` and then uses `store.setState()` to simulate state changes, verifying the guard's `canActivate()` method behavior based on the `loggedIn` property. The `jasmine-marbles` library is used for testing observable outputs.
+SOURCE: https://github.com/ngrx/platform/blob/main/projects/ngrx.io/content/guide/store/testing.md#_snippet_0
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+import { TestBed } from '@angular/core/testing';
+import { provideMockStore, MockStore } from '@ngrx/store/testing';
+import { cold } from 'jasmine-marbles';
+
+import { AuthGuard } from '../guards/auth.guard';
+
+describe('Auth Guard', () => {
+  let guard: AuthGuard;
+  let store: MockStore;
+  const initialState = { loggedIn: false };
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [
+        // any modules needed
+      ],
+      providers: [
+        AuthGuard,
+        provideMockStore({ initialState }),
+        // other providers
+      ],
+    });
+
+    store = TestBed.inject(MockStore);
+    guard = TestBed.inject(AuthGuard);
+  });
+
+  it('should return false if the user state is not logged in', () => {
+    const expected = cold('(a|)', { a: false });
+
+    expect(guard.canActivate()).toBeObservable(expected);
+  });
+
+  it('should return true if the user state is logged in', () => {
+    store.setState({ loggedIn: true });
+
+    const expected = cold('(a|)', { a: true });
+
+    expect(guard.canActivate()).toBeObservable(expected);
+  });
+});
+```
+
+---
+
+TITLE: Implementing NgRx Reducer with Entity Adapter for User State
+DESCRIPTION: This snippet demonstrates how to implement an NgRx reducer for `User` entities using the `createEntityAdapter`. It defines the `State` interface, initializes the `initialState` with the adapter's `getInitialState` method, and uses `createReducer` with `on` functions to handle various user actions by applying the corresponding NgRx Entity Adapter collection methods for immutable state updates.
+SOURCE: https://github.com/ngrx/platform/blob/main/projects/ngrx.io/content/guide/entity/adapter.md#_snippet_4
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+import { Action, createReducer, on } from '@ngrx/store';
+import { EntityState, EntityAdapter, createEntityAdapter } from '@ngrx/entity';
+import { User } from '../models/user.model';
+import * as UserActions from '../actions/user.actions';
+
+export interface State extends EntityState<User> {
+  // additional entities state properties
+  selectedUserId: string | null;
+}
+
+export const adapter: EntityAdapter<User> = createEntityAdapter<User>();
+
+export const initialState: State = adapter.getInitialState({
+  // additional entity state properties
+  selectedUserId: null,
+});
+
+export const userReducer = createReducer(
+  initialState,
+  on(UserActions.addUser, (state, { user }) => {
+    return adapter.addOne(user, state)
+  }),
+  on(UserActions.setUser, (state, { user }) => {
+    return adapter.setOne(user, state)
+  }),
+  on(UserActions.upsertUser, (state, { user }) => {
+    return adapter.upsertOne(user, state);
+  }),
+  on(UserActions.addUsers, (state, { users }) => {
+    return adapter.addMany(users, state);
+  }),
+  on(UserActions.upsertUsers, (state, { users }) => {
+    return adapter.upsertMany(users, state);
+  }),
+  on(UserActions.updateUser, (state, { update }) => {
+    return adapter.updateOne(update, state);
+  }),
+  on(UserActions.updateUsers, (state, { updates }) => {
+    return adapter.updateMany(updates, state);
+  }),
+  on(UserActions.mapUser, (state, { entityMap }) => {
+    return adapter.mapOne(entityMap, state);
+  }),
+  on(UserActions.mapUsers, (state, { entityMap }) => {
+    return adapter.map(entityMap, state);
+  }),
+  on(UserActions.deleteUser, (state, { id }) => {
+    return adapter.removeOne(id, state);
+  }),
+  on(UserActions.deleteUsers, (state, { ids }) => {
+    return adapter.removeMany(ids, state);
+  }),
+  on(UserActions.deleteUsersByPredicate, (state, { predicate }) => {
+
+```
+
+---
+
+TITLE: Correct: Defining NgRx Action with createAction
+DESCRIPTION: This snippet shows the preferred way to define an NgRx action using the `createAction` function. This method provides better type inference, reduces boilerplate, and aligns with modern NgRx practices.
+SOURCE: https://github.com/ngrx/platform/blob/main/projects/ngrx.io/content/guide/eslint-plugin/rules/prefer-action-creator.md#_snippet_1
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+export const loadUser = createAction('[User Page] Load User');
+```
+
+---
+
+TITLE: Custom Primary Key Selection for NgRx Data (TypeScript)
+DESCRIPTION: This `selectId` function configures NgRx Data to use the `key` property as the primary identifier for `Villain` entities, rather than the default `id`. This is essential when an entity's unique key is named differently or derived from a specific property, ensuring correct entity tracking and management.
+SOURCE: https://github.com/ngrx/platform/blob/main/projects/ngrx.io/content/guide/data/entity-metadata.md#_snippet_7
+
+LANGUAGE: typescript
+CODE:
+
+```
+selectId: (villain: Villain) => villain.key;
+```
+
+---
+
+TITLE: Creating User Feature Reducer with NgRx - TypeScript
+DESCRIPTION: This snippet defines the reducer for the `User` feature using NgRx `createReducer`. It handles `addUser` actions by adding a new user to the state using the entity adapter's `addOne` method, and `selectUser` actions by updating the `selectedUserId` property in the state. It relies on the previously defined `initialState` and `UserListPageActions`.
+SOURCE: https://github.com/ngrx/platform/blob/main/projects/ngrx.io/content/guide/entity/recipes/entity-adapter-with-feature-creator.md#_snippet_2
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+import { createReducer, on } from '@ngrx/store';
+import { UserListPageActions } from './user-list-page.actions';
+
+const reducer = createReducer(
+  initialState,
+  on(UserListPageActions.addUser, (state, { user }) =>
+    adapter.addOne(user, state)
+  ),
+  on(UserListPageActions.selectUser, (state, { userId }) => ({
+    ...state,
+    selectedUserId: userId,
+  }))
+);
+```
+
+---
+
+TITLE: Fixing Action Type Uniqueness in NgRx (TypeScript)
+DESCRIPTION: This snippet provides the correct way to define NgRx actions to comply with `strictActionTypeUniqueness`. It ensures that each action, even if related, has a distinct and unique type string, preventing conflicts and improving clarity in the application's action flow.
+SOURCE: https://github.com/ngrx/platform/blob/main/projects/ngrx.io/content/guide/store/configuration/runtime-checks.md#_snippet_12
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+export const customerPageLoaded = createAction('[Customers Page] Loaded');
+export const customerPageRefreshed = createAction('[Customers Page] Refreshed');
+```
+
+---
+
+TITLE: Selecting Multiple Pieces of State with NgRx
+DESCRIPTION: This example illustrates how to use `createSelector` to combine multiple slices of state (selected user and all books) to derive a new, filtered state (visible books). It demonstrates how to filter books based on a selected user, showing all books if no user is selected.
+SOURCE: https://github.com/ngrx/platform/blob/main/projects/ngrx.io/content/guide/store/selectors.md#_snippet_1
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+import { createSelector } from '@ngrx/store';
+
+export interface User {
+  id: number;
+  name: string;
+}
+
+export interface Book {
+  id: number;
+  userId: number;
+  name: string;
+}
+
+export interface AppState {
+  selectedUser: User;
+  allBooks: Book[];
+}
+
+export const selectUser = (state: AppState) => state.selectedUser;
+export const selectAllBooks = (state: AppState) => state.allBooks;
+
+export const selectVisibleBooks = createSelector(
+  selectUser,
+  selectAllBooks,
+  (selectedUser: User, allBooks: Book[]) => {
+    if (selectedUser && allBooks) {
+      return allBooks.filter((book: Book) => book.userId === selectedUser.id);
+    } else {
+      return allBooks;
+    }
+  }
+);
+```
+
+---
+
+TITLE: Using EntityCollectionService in NgRx Data Component (TypeScript)
+DESCRIPTION: This snippet demonstrates how a component uses `EntityCollectionService` to interact with an NgRx Data entity collection. It shows the constructor injecting `EntityCollectionServiceFactory` to create a service for 'Hero' entities, and then exposes common CRUD operations (get, add, delete, update) and selector observables (`filteredEntities$`, `loading$`) for reactive state management.
+SOURCE: https://github.com/ngrx/platform/blob/main/projects/www/src/app/pages/guide/data/entity-collection-service.md#_snippet_0
+
+LANGUAGE: typescript
+CODE:
+
+```
+constructor(EntityCollectionServiceFactory: EntityCollectionServiceFactory) {
+  this.heroService = EntityCollectionServiceFactory.create<Hero>('Hero');
+  this.filteredHeroes$ = this.heroService.filteredEntities$;
+  this.loading$ = this.heroService.loading$;
+}
+
+getHeroes() { this.heroService.getAll(); }
+add(hero: Hero) { this.heroService.add(hero); }
+deleteHero(hero: Hero) { this.heroService.delete(hero.id); }
+update(hero: Hero) { this.heroService.update(hero); }
+```
+
+---
+
+TITLE: Selecting Single State Slice with NgRx createSelector (TypeScript)
+DESCRIPTION: This snippet defines an NgRx selector using `createSelector` to extract a specific `counter` property from a `FeatureState` within the overall `AppState`. It demonstrates how to define basic state interfaces and a root selector (`selectFeature`) which is then used as an input to `selectFeatureCount` for memoized state access.
+SOURCE: https://github.com/ngrx/platform/blob/main/projects/www/src/app/pages/guide/store/selectors.md#_snippet_0
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+import { createSelector } from '@ngrx/store';
+
+export interface FeatureState {
+  counter: number;
+}
+
+export interface AppState {
+  feature: FeatureState;
+}
+
+export const selectFeature = (state: AppState) => state.feature;
+
+export const selectFeatureCount = createSelector(
+  selectFeature,
+  (state: FeatureState) => state.counter
+);
+```
+
+---
+
+TITLE: Defining NgRx Effect with createEffect (TypeScript - After V11)
+DESCRIPTION: This TypeScript snippet demonstrates the recommended `createEffect` method for defining NgRx effects, replacing the `@Effect()` decorator. This approach offers improved type safety and better integration with modern Angular practices.
+SOURCE: https://github.com/ngrx/platform/blob/main/projects/www/src/app/pages/guide/migration/v11.md#_snippet_8
+
+LANGUAGE: ts
+CODE:
+
+```
+login$ = createEffect(() => {
+  return this.actions$.pipe(...);
+});
+```
+
+---
+
+TITLE: Handling Side Effects with NgRx Signals Events in TypeScript
+DESCRIPTION: This snippet demonstrates how to define and manage side effects using the `withEffects` feature in NgRx Signals. It shows how to listen for specific events using `events.on`, perform asynchronous operations with `switchMap` and `booksService`, and map responses to success or failure events using `mapResponse`. It also includes an example of logging errors with `tap`.
+SOURCE: https://github.com/ngrx/platform/blob/main/projects/ngrx.io/content/guide/signals/signal-store/events.md#_snippet_6
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+// ... other imports
+import { switchMap, tap } from 'rxjs';
+import { Events, withEffects } from '@ngrx/signals/events';
+import { mapResponse } from '@ngrx/operators';
+import { BooksService } from './books-service';
+
+export const BookSearchStore = signalStore(
+  // ... other features
+  withEffects(
+    (
+      store,
+      events = inject(Events),
+      booksService = inject(BooksService),
+    ) => ({
+      loadBooksByQuery$: events
+        .on(bookSearchEvents.opened, bookSearchEvents.queryChanged)
+        .pipe(
+          switchMap(() =>
+            booksService.getByQuery(store.query()).pipe(
+              mapResponse({
+                next: (books) => booksApiEvents.loadedSuccess(books),
+                error: (error: { message: string }) =>
+                  booksApiEvents.loadedFailure(error.message),
+              }),
+            ),
+          ),
+        ),
+      logError$: events
+        .on(booksApiEvents.loadedFailure)
+        .pipe(tap(({ payload }) => console.error(payload))),
+    }),
+  ),
+);
+```
+
+---
+
+TITLE: Subscribing to NgRx Store in ngOnInit - TypeScript (Incorrect)
+DESCRIPTION: This snippet demonstrates an incorrect way to access NgRx store data by directly subscribing within the `ngOnInit` lifecycle hook. This approach can lead to memory leaks if the subscription is not properly unsubscribed, and it is less performant than using the `async` pipe.
+SOURCE: https://github.com/ngrx/platform/blob/main/projects/ngrx.io/content/guide/eslint-plugin/rules/no-store-subscription.md#_snippet_0
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+ngOnInit() {
+  this.store.select(selectedItems).subscribe(items => {
+    this.items = items;
+  })
+}
+```
+
+---
+
+TITLE: Providing Mock Actions for NgRx Effects Testing - TypeScript
+DESCRIPTION: This snippet demonstrates how to set up a mock `Actions` Observable using `provideMockActions` in an NgRx Effects test. It allows individual tests to subscribe to a controlled stream of actions, which is essential for testing side effects. The `actions$` variable is initialized as an `Observable<Action>` and provided to the `TestBed`.
+SOURCE: https://github.com/ngrx/platform/blob/main/projects/www/src/app/pages/guide/effects/testing.md#_snippet_0
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+import { provideMockActions } from '@ngrx/effects/testing';
+
+let actions$ = new Observable<Action>();
+
+TestBed.configureTestingModule({
+  providers: [provideMockActions(() => actions$)],
+});
+```
+
+---
+
+TITLE: Integrating Request Status Feature into a SignalStore (TypeScript)
+DESCRIPTION: This example demonstrates how to compose the `withRequestStatus` feature and its associated updaters within an `ngrx/signals` `signalStore` named `BooksStore`. It uses `patchState` with the `setPending` and `setFulfilled` updaters to manage the request status during an asynchronous `loadAll` operation, alongside `withEntities` for entity management. This shows a practical application of custom features for managing complex store states.
+SOURCE: https://github.com/ngrx/platform/blob/main/projects/www/src/app/pages/guide/signals/signal-store/custom-store-features.md#_snippet_2
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+import { inject } from '@angular/core';
+import { patchState, signalStore, withMethods } from '@ngrx/signals';
+import { setAllEntities, withEntities } from '@ngrx/signals/entities';
+import {
+  setFulfilled,
+  setPending,
+  withRequestStatus,
+} from './request-status.feature';
+import { Book } from './book.model';
+import { BooksService } from './books.service';
+
+export const BooksStore = signalStore(
+  withEntities<Book>(),
+  withRequestStatus(),
+  withMethods((store, booksService = inject(BooksService)) => ({
+    async loadAll() {
+      patchState(store, setPending());
+
+      const books = await booksService.getAll();
+      patchState(store, setAllEntities(books), setFulfilled());
+    },
+  }))
+);
+```
+
+---
+
+TITLE: Defining Asynchronous Side Effect Methods with `withMethods` in NgRx SignalStore (TypeScript)
+DESCRIPTION: This snippet demonstrates how to define asynchronous methods within an NgRx SignalStore using `withMethods` to perform side effects. It shows an `async loadAll` method that injects `BooksService` to fetch data, updates an `isLoading` state, and then patches the `books` state upon successful data retrieval. This pattern supports Promise-based asynchronous operations.
+SOURCE: https://github.com/ngrx/platform/blob/main/projects/www/src/app/pages/guide/signals/signal-store/index.md#_snippet_8
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+import { computed, inject } from '@angular/core';
+import { patchState, signalStore /* ... */ } from '@ngrx/signals';
+import { Book } from './book.model';
+import { BooksService } from './books.service';
+
+type BooksState = {
+  /* ... */
+};
+
+const initialState: BooksState = {
+  /* ... */
+};
+
+export const BooksStore = signalStore(
+  withState(initialState),
+  withComputed(/* ... */),
+  // 👇 `BooksService` can be injected within the `withMethods` factory.
+  withMethods((store, booksService = inject(BooksService)) => ({
+    /* ... */
+    // 👇 Defining a method to load all books.
+    async loadAll(): Promise<void> {
+      patchState(store, { isLoading: true });
+
+      const books = await booksService.getAll();
+      patchState(store, { books, isLoading: false });
+    },
+  }))
+);
+```
+
+---
+
+TITLE: Setting up @ngrx/router-store with Angular ApplicationConfig
+DESCRIPTION: This snippet demonstrates how to configure an Angular application using `ApplicationConfig` to integrate `@ngrx/router-store`. It involves providing the Angular Router, the NgRx Store with the `routerReducer`, and the `provideRouterStore` service to enable router state management within the NgRx store.
+SOURCE: https://github.com/ngrx/platform/blob/main/projects/www/src/app/pages/guide/router-store/index.md#_snippet_0
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+import { ApplicationConfig } from '@angular/core';
+import { provideRouter } from '@angular/router';
+import { provideStore } from '@ngrx/store';
+import {
+  provideRouterStore,
+  routerReducer,
+} from '@ngrx/router-store';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideRouter([
+      // routes
+    ]),
+    provideStore({
+      router: routerReducer,
+    }),
+    provideRouterStore(),
+  ],
+};
+```

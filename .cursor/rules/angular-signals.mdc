@@ -1,0 +1,34 @@
+---
+description: 'Ensures that Angular component state and reactivity patterns adhere to modern Signals best practices, leveraging the latest Angular documentation.'
+globs:
+  - '**/*.component.ts'
+alwaysApply: true
+---
+
+# Modern Angular Signals Usage
+
+When generating or modifying Angular component code, prioritize the use of Angular Signals for state management and reactive programming.
+
+**Core Principles:**
+
+- Use `signal()` for component state.
+- Use `computed()` for derived state.
+- Use `effect()` for side effects that need to react to signal changes.
+- Prefer `inject()` for dependency injection, especially for services related to signals.
+
+**Examples and Best Practices (use context7 for detailed examples):**
+To ensure accuracy and stay up-to-date, always refer to the latest official Angular documentation for Signals.
+
+**For example, if you need to understand how to create a simple signal:**
+"Generate a simple Angular component that uses `signal()` for a counter. Make sure to use `inject()` for any service dependencies. **use context7**"
+
+**If you need to see how `computed()` works:**
+"Show me an Angular example demonstrating `computed()` with two signals to create a derived value. **use context7**"
+
+**Common Pitfalls to Avoid:**
+
+- Avoid direct DOM manipulation; use Angular's templating system.
+- Ensure proper cleanup in effects to prevent memory leaks.
+- Use proper typing for signals to maintain type safety.
+
+---

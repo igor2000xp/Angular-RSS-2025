@@ -1,0 +1,8 @@
+---
+description: 
+globs: **/*.*
+alwaysApply: false
+---
+- Maintain a clear and organized project structure.
+- Use meaningful names for files and directories.
+- Avoid clutter by removing unnecessary files.

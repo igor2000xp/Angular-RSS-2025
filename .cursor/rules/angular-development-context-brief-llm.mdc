@@ -1,0 +1,1512 @@
+---
+description: In zoneless Angular applications, change detection relies on explicit notifications from core APIs rather than ZoneJS's monkey-patching. These mechanisms inform Angular when to run change detection and on which views, ensuring proper UI updates.
+globs:
+alwaysApply: true
+---
+
+TITLE: Angular Zoneless Change Detection Mechanisms
+DESCRIPTION: In zoneless Angular applications, change detection relies on explicit notifications from core APIs rather than ZoneJS's monkey-patching. These mechanisms inform Angular when to run change detection and on which views, ensuring proper UI updates.
+SOURCE: https://angular.dev/guide/zoneless
+
+LANGUAGE: APIDOC
+CODE:
+
+```
+Angular relies on notifications from core APIs to determine when to run change detection:
+- ChangeDetectorRef.markForCheck (called automatically by AsyncPipe)
+- ComponentRef.setInput
+- Updating a signal that's read in a template
+- Bound host or template listeners callbacks
+- Attaching a view that was marked dirty by one of the above
+```
+
+---
+
+TITLE: Inject HttpClient into an Angular Service
+DESCRIPTION: This example demonstrates how to inject the `HttpClient` service into an Angular service using the `inject` function. Once injected, the service can use `this.http` to make HTTP requests.
+SOURCE: https://angular.dev/guide/http/setup
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+@Injectable({providedIn: 'root'})
+export class ConfigService {
+  private http = inject(HttpClient);
+  // This service can now make HTTP requests via `this.http`.
+}
+```
+
+---
+
+TITLE: Angular HTTP Interceptor: Add Authentication Header
+DESCRIPTION: This TypeScript code demonstrates a common pattern in Angular HTTP interceptors: adding an authentication token to outgoing requests. It uses Angular's `inject` function to retrieve an `AuthService` instance, obtains the authentication token, and then clones the original `HttpRequest` to append the `X-Authentication-Token` header. The modified request is then passed to the next handler in the interceptor chain.
+SOURCE: https://angular.dev/guide/http/interceptors
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+const authToken = inject(AuthService).getAuthToken();
+
+// Clone the request to add the authentication header.
+const newReq = req.clone({
+  headers: req.headers.append('X-Authentication-Token', authToken),
+});
+return next(newReq);
+}
+```
+
+---
+
+TITLE: Conditionally display content with Angular's @if, @else-if, and @else blocks
+DESCRIPTION: Angular templates support control flow blocks for conditional display. The `@if` block shows content when its condition is truthy. You can extend this with `@else if` for additional conditions and a final `@else` block for fallback content.
+SOURCE: https://angular.dev/guide/templates/control-flow
+
+LANGUAGE: Angular Template
+CODE:
+
+```
+@if (a > b) {
+  <p>{{a}} is greater than {{b}}</p>
+}
+```
+
+LANGUAGE: Angular Template
+CODE:
+
+```
+@if (a > b) {
+ {{a}} is greater than {{b}}
+} @else if (b > a) {
+ {{a}} is less than {{b}}
+} @else {
+ {{a}} is equal to {{b}}
+}
+```
+
+---
+
+TITLE: Configure Angular Router in Application Providers
+DESCRIPTION: Integrates the Angular router into the application's configuration by adding `provideRouter` to the providers array in `app.config.ts`. This step enables routing throughout the application and binds component inputs to route parameters.
+SOURCE: https://angular.dev/guide/routing/routing-with-urlmatcher
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+provideRouter(routes, withComponentInputBinding())
+```
+
+---
+
+TITLE: Configuring Angular HTTP Interceptors
+DESCRIPTION: Shows how to configure Angular's HttpClient to use a chain of interceptors (e.g., loggingInterceptor, cachingInterceptor) during application bootstrapping using `provideHttpClient` and `withInterceptors`.
+SOURCE: https://angular.dev/guide/http/interceptors
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+bootstrapApplication(AppComponent, {providers: [  provideHttpClient(    withInterceptors([loggingInterceptor, cachingInterceptor]),  )]});
+```
+
+---
+
+TITLE: Providing an Angular Service at Root Level with providedIn
+DESCRIPTION: Illustrates the preferred method for making a service available throughout the entire Angular application by setting `providedIn: 'root'` within the `@Injectable` decorator. This approach ensures a single, shared instance and enables effective tree-shaking for unused services.
+SOURCE: https://angular.dev/guide/di/dependency-injection
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+@Injectable({
+  providedIn: 'root'
+})class HeroService {}
+```
+
+---
+
+TITLE: Using Built-in Angular Input Transforms
+DESCRIPTION: This snippet showcases Angular's built-in `booleanAttribute` and `numberAttribute` transforms. `booleanAttribute` coerces values to boolean, treating the string 'false' as false, while `numberAttribute` parses values to numbers, returning `NaN` on failure. These simplify common type coercions for component inputs.
+SOURCE: https://angular.dev/guide/components/inputs
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+import {Component, input, booleanAttribute, numberAttribute} from '@angular/core';@Component({/*...*/})export class CustomSlider {  disabled = input(false, {transform: booleanAttribute});   value = input(0, {transform: numberAttribute}); }
+```
+
+---
+
+TITLE: Declaring Basic Angular Component Input with @Input Decorator
+DESCRIPTION: This snippet demonstrates how to declare a simple input property `value` on an Angular component using the `@Input` decorator. The input is initialized to a default value of 0. It also shows how to bind a value to this input in an Angular template.
+SOURCE: https://angular.dev/guide/components/inputs
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+@Component({...})
+export class CustomSlider {  @Input() value = 0;}
+```
+
+LANGUAGE: HTML
+CODE:
+
+```
+<custom-slider [value]="50" />
+```
+
+---
+
+TITLE: Angular Core inject Function API
+DESCRIPTION: The `inject` function retrieves an instance of a dependency from the current injection context. It is crucial for accessing services and tokens within Angular's dependency injection system. It only returns an instance if the injector can successfully resolve the required token. Calling `inject` outside of an active injection context will result in an `NG0203` error.
+SOURCE: https://angular.dev/guide/di/dependency-injection-context
+
+LANGUAGE: APIDOC
+CODE:
+
+```
+Function: inject
+  Purpose: Retrieves an instance of a dependency.
+  Behavior: Returns an instance only if the injector can resolve the required token.
+  Error: Throws NG0203 if called outside an injection context.
+```
+
+---
+
+TITLE: NgZone API Compatibility in Zoneless Angular
+DESCRIPTION: Certain `NgZone` observables and properties, such as `onMicrotaskEmpty`, `onUnstable`, `onStable`, and `isStable`, become non-functional in zoneless applications and must be removed or replaced. However, `NgZone.run` and `NgZone.runOutsideAngular` remain compatible and should not be removed to avoid performance regressions in applications still relying on ZoneJS.
+SOURCE: https://angular.dev/guide/zoneless
+
+LANGUAGE: APIDOC
+CODE:
+
+```
+NgZone APIs to Remove/Replace in Zoneless Applications:
+- NgZone.onMicrotaskEmpty: Replace with `afterNextRender` or `afterEveryRender`.
+- NgZone.onUnstable: Remove.
+- NgZone.onStable: Replace with `afterNextRender` or `afterEveryRender`.
+- NgZone.isStable: Always `true`, do not use as a condition for code execution.
+
+NgZone APIs Compatible with Zoneless Applications:
+- NgZone.run
+- NgZone.runOutsideAngular
+```
+
+---
+
+TITLE: Angular Defer Block: Hydrate On Viewport Trigger
+DESCRIPTION: This Angular template snippet demonstrates how to use `@defer (hydrate on viewport)` to load and hydrate content. The hydration is triggered when the specified content enters the user's viewport, utilizing the Intersection Observer API for efficient visibility detection.
+SOURCE: https://angular.dev/guide/incremental-hydration
+
+LANGUAGE: Angular Template
+CODE:
+
+```
+@defer (hydrate on viewport) {
+  <large-cmp />
+} @placeholder {
+  <div>Large component placeholder</div>
+}
+```
+
+---
+
+TITLE: Substitute Angular Service Implementation Using useClass Provider
+DESCRIPTION: Illustrates how to use the `useClass` provider definition to substitute a different class (`BetterLogger`) for a requested dependency token (`Logger`). This is useful for alternative implementations, extensions, or testing.
+SOURCE: https://angular.dev/guide/di/dependency-injection-providers
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+[{ provide: Logger, useClass: BetterLogger }]
+```
+
+---
+
+TITLE: Angular `linkedSignal` for Preserving User Selection
+DESCRIPTION: This TypeScript example demonstrates how to use `linkedSignal` with a `source` and `computation` to preserve a user's `selectedOption` when the `shippingOptions` list changes. The `computation` checks if the previously selected option still exists in the new list; otherwise, it defaults to the first option.
+SOURCE: https://angular.dev/guide/signals/linked-signal
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+interface ShippingMethod {
+  id: number;
+  name: string;
+}
+
+@Component({/* ... */})
+export class ShippingMethodPicker {
+  constructor() {
+    this.changeShipping(2);
+    this.changeShippingOptions();
+    console.log(this.selectedOption()); // {"id":2,"name":"Postal Service"}
+  }
+
+  shippingOptions = signal<ShippingMethod[]>([
+    { id: 0, name: 'Ground' },
+    { id: 1, name: 'Air' },
+    { id: 2, name: 'Sea' },
+  ]);
+
+  selectedOption = linkedSignal<ShippingMethod[], ShippingMethod>({
+    // `selectedOption` is set to the `computation` result whenever this `source` changes.
+    source: this.shippingOptions,
+    computation: (newOptions, previous) => {
+      // If the newOptions contain the previously selected option, preserve that selection.
+      // Otherwise, default to the first option.
+      return (
+        newOptions.find((opt) => opt.id === previous?.value.id) ?? newOptions[0]
+      );
+    },
+  });
+
+  changeShipping(index: number) {
+    this.selectedOption.set(this.shippingOptions()[index]);
+  }
+
+  changeShippingOptions() {
+    this.shippingOptions.set([
+      { id: 0, name: 'Email' },
+      { id: 1, name: 'Sea' },
+      { id: 2, name: 'Postal Service' },
+    ]);
+  }
+}
+```
+
+---
+
+TITLE: Angular @for Block for Iterating Collections
+DESCRIPTION: The Angular `@for` block is used to loop through a collection and repeatedly render content. It supports any JavaScript iterable, with performance optimizations for Arrays. The `track` expression is crucial for performance, enabling Angular to efficiently manage DOM nodes by uniquely identifying each item in the collection.
+SOURCE: https://angular.dev/guide/templates/control-flow
+
+LANGUAGE: Angular Template
+CODE:
+
+```
+@for (item of items; track item.id) {
+  {{ item.name }}
+}
+```
+
+---
+
+TITLE: Declaring Required Angular Component Inputs
+DESCRIPTION: This example illustrates how to declare a required input using `input.required<type>()`. Angular enforces that these inputs must be set when the component is used, reporting a build-time error if omitted. Required inputs do not implicitly include `undefined` in their type.
+SOURCE: https://angular.dev/guide/components/inputs
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+@Component({/*...*/})export class CustomSlider {  // Declare a required input named value. Returns an `InputSignal<number>`.  value = input.required<number>();}
+```
+
+---
+
+TITLE: Angular Interceptor with Dependency Injection for Authentication
+DESCRIPTION: Demonstrates how an Angular HTTP interceptor can use the `inject` API to retrieve services (e.g., `AuthService`) to perform tasks like fetching an authentication token and adding it to the request headers.
+SOURCE: https://angular.dev/guide/http/interceptors
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+export function authInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn) {  // Inject the current `AuthService` and use it to get an authentication token:  const authToken = inject(AuthService).getAuthToken();  // Clone the request to add the authentication header.  const newReq = req.clone({    headers: req.headers.append('X-Authentication-Token', authToken),  });  return next(newReq);}
+```
+
+---
+
+TITLE: Making POST Requests with HttpClient in Angular
+DESCRIPTION: Demonstrates how to perform a POST request using `HttpClient.post()` to send data to a server API. The method accepts a body argument and returns an Observable that must be subscribed to for the request to be executed.
+SOURCE: https://angular.dev/guide/http/making-requests
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+http.post<Config>('/api/config', newConfig).subscribe(config => {  console.log('Updated config:', config);});
+```
+
+---
+
+TITLE: Angular Template Deferred Loading Syntax
+DESCRIPTION: The `@defer` block is an Angular template syntax feature that allows developers to declaratively mark parts of their templates for lazy loading. This helps in optimizing application performance by only loading necessary components or content when they are needed, reducing initial bundle size and improving load times.
+SOURCE: https://angular.dev/overview
+
+LANGUAGE: Angular Template Syntax
+CODE:
+
+```
+@defer
+```
+
+---
+
+TITLE: Reference @let Variables in Angular Templates
+DESCRIPTION: This example illustrates how to reference and utilize a variable declared with `@let` throughout an Angular template. It demonstrates conditional rendering (`@if`), property binding (`[photo]`), iteration (`@for`), and event handling (`(click)`), all using the `@let` variable `user`.
+SOURCE: https://angular.dev/guide/templates/variables
+
+LANGUAGE: Angular Template
+CODE:
+
+```
+@let user = user$ | async;@if (user) {
+  <h1>Hello, {{user.name}}</h1>
+  <user-avatar [photo]="user.photo"/>
+  <ul>
+    @for (snack of user.favoriteSnacks; track snack.id) {
+      <li>{{snack.name}}</li>
+    }
+  </ul>
+  <button (click)="update(user)">Update profile</button>
+}
+```
+
+---
+
+TITLE: Using 'protected' for Template-Bound Component Members in Angular
+DESCRIPTION: Demonstrates the use of the 'protected' access modifier for class members that are exclusively accessed from a component's template. This practice helps define a clear public API for the component, separating internal template-specific properties from those accessible via dependency injection or queries.
+SOURCE: https://next.angular.dev/style-guide
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+@Component
+```
+
+---
+
+TITLE: Define Angular Component with CSS Selector
+DESCRIPTION: This snippet demonstrates how to define an Angular component using the `@Component` decorator. The `selector` property specifies the custom HTML tag name that will be used to represent this component in templates. The `...` indicates other potential component properties.
+SOURCE: https://angular.dev/guide/components
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+@Component({
+ selector: 'profile-photo',
+ ...
+})
+export class ProfilePhoto { }
+```
+
+---
+
+TITLE: Enabling Zoneless Change Detection in Angular Applications
+DESCRIPTION: This code snippet illustrates how to configure an Angular application to use Zoneless change detection. It provides examples for both standalone component bootstrapping using `bootstrapApplication` and traditional NgModule-based bootstrapping, demonstrating the inclusion of `provideZonelessChangeDetection()` in the application's providers.
+SOURCE: https://angular.dev/guide/zoneless
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+// standalone bootstrap
+bootstrapApplication(MyApp, {providers: [  provideZonelessChangeDetection(),]});
+// NgModule bootstrap
+platformBrowser().bootstrapModule(AppModule);
+@NgModule({  providers: [provideZonelessChangeDetection()]})
+export class AppModule {}
+```
+
+---
+
+TITLE: Consuming Dependencies with Angular's inject Function
+DESCRIPTION: Demonstrates how to use Angular's `inject` function to retrieve dependencies within a component. The `inject` function can be used in property initializers or within the constructor of components, directives, services, and pipes. Angular resolves the requested service instances, creating them if they don't already exist, before providing them to the component.
+SOURCE: https://angular.dev/guide/di/dependency-injection
+
+LANGUAGE: Angular
+CODE:
+
+```
+import {inject, Component} from 'angular/core';
+
+@Component({/* ... */})
+export class UserProfile {
+  // You can use the `inject` function in property initializers.
+  private userClient = inject(UserClient);
+
+  constructor() {
+    // You can also use the `inject` function in a constructor.
+    const logger = inject(Logger);
+  }
+}
+```
+
+---
+
+TITLE: Angular Component with Signal and Effect
+DESCRIPTION: This snippet illustrates how to create an Angular component that utilizes a `signal` to hold a reactive value (e.g., a counter) and an `effect` to perform side effects, such as logging, whenever the signal's value changes. The effect is registered within the component's constructor, ensuring it runs after the component is initialized and whenever its dependencies (the signal) update.
+SOURCE: https://angular.dev/guide/signals
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+@Component({...})
+export class EffectiveCounterComponent {
+  readonly count = signal(0);
+  constructor() {
+    // Register a new effect.
+    effect(() => {
+      console.log(`The count is: ${this.count()}`);
+    });
+  }
+}
+```
+
+---
+
+TITLE: Enable Incremental Hydration in Angular Application
+DESCRIPTION: This TypeScript snippet demonstrates how to configure an Angular application to use incremental hydration. By including `withIncrementalHydration()` within `provideClientHydration()` in your `main.ts` file, you enable selective hydration and automatic event replay for improved performance.
+SOURCE: https://angular.dev/guide/incremental-hydration
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+import { bootstrapApplication } from '@angular/platform-browser';
+...
+
+bootstrapApplication(AppComponent, {
+  providers: [provideClientHydration(withIncrementalHydration())]
+});
+```
+
+---
+
+TITLE: Define Computed Signals in Angular
+DESCRIPTION: Shows how to define a read-only computed signal using the `computed` function. Computed signals derive their values from other signals and automatically re-evaluate when their dependencies change.
+SOURCE: https://angular.dev/guide/signals
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+const count: WritableSignal<number> = signal(0);
+const doubleCount: Signal<number> = computed(
+```
+
+---
+
+TITLE: Configure Angular Component with External Template and Style URLs
+DESCRIPTION: This snippet demonstrates how to configure an Angular component to use external HTML template and CSS style files. By specifying `templateUrl` and `styleUrl` in the `@Component` decorator, developers can separate presentation concerns from component behavior, improving maintainability and organization. Both URLs are relative to the component's directory.
+SOURCE: https://angular.dev/guide/components
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+@Component({
+ selector: 'profile-photo',
+ templateUrl: 'profile-photo.html',
+ styleUrl: 'profile-photo.css',
+})
+export class ProfilePhoto { }
+```
+
+---
+
+TITLE: Conditionally display content with the @switch block
+DESCRIPTION: While the @if block is great for most scenarios, the @switch block provides an alternate syntax to conditionally render data. Its syntax closely resembles JavaScript's switch statement. The value of the conditional expression is compared to the case expression using the triple-equals (===) operator. @switch does not have a fallthrough, so you do not need an equivalent to a break or return statement in the block. You can optionally include a @default block. The content of the @default block displays if none of the preceding case expressions match the switch value. If no @case matches the expression and there is no @default block, nothing is shown.
+SOURCE: https://angular.dev/guide/templates/control-flow
+
+LANGUAGE: Angular Template Syntax
+CODE:
+
+```
+@switch (userPermissions) {  @case ('admin') {    <app-admin-dashboard />  }  @case ('reviewer') {    <app-reviewer-dashboard />  }  @case ('editor') {    <app-editor-dashboard />  }  @default {    <app-viewer-dashboard />  }}
+```
+
+---
+
+TITLE: Declaring Required Angular Component Input
+DESCRIPTION: This example shows how to make an input property mandatory using the `required: true` option within the `@Input` decorator's configuration object. If a component is used without providing a value for this required input, Angular will report an error at build-time.
+SOURCE: https://angular.dev/guide/components/inputs
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+@Component({...})
+export class CustomSlider {  @Input({required: true}) value = 0;}
+```
+
+---
+
+TITLE: Render Lists with Fallback using Angular @for and @empty Blocks
+DESCRIPTION: Demonstrates how to iterate over a collection using Angular's `@for` block. It includes an optional `@empty` block that provides fallback content to display when the collection is empty, ensuring a user-friendly experience.
+SOURCE: https://angular.dev/guide/templates/control-flow
+
+LANGUAGE: Angular Template
+CODE:
+
+```
+@for (item of items; track item.name) {
+  <li> {{ item.name }}</li>
+} @empty {
+  <li aria-hidden="true"> There are no items. </li>
+}
+```
+
+---
+
+TITLE: Angular Standalone Components CLI Schematic
+DESCRIPTION: Angular has introduced a new CLI schematic, `ng new --standalone`, to facilitate the creation of new applications without NgModules. This is now the recommended default for new projects in Angular v17, simplifying application bootstrapping and development.
+SOURCE: https://angular.dev/roadmap
+
+LANGUAGE: CLI
+CODE:
+
+```
+ng new --standalone
+```
+
+---
+
+TITLE: Fetch JSON Data with Angular HttpClient and Type Assertion
+DESCRIPTION: Demonstrates how to use Angular's HttpClient.get method to fetch JSON data from an API endpoint. It shows how to specify a generic type argument (e.g., 'Config') for type assertion, which helps TypeScript understand the structure of the returned data. It's important to note that HttpClient does not verify if the actual server response matches this asserted type. The subscribe method is used to handle the asynchronous response.
+SOURCE: https://angular.dev/guide/http/making-requests
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+http.get<Config>('/api/config').subscribe(config => {
+  // process the configuration.
+});
+```
+
+---
+
+TITLE: Angular Component Lifecycle Hooks Summary
+DESCRIPTION: This table summarizes the key lifecycle hooks in Angular, detailing their phase (Creation, Change Detection, Rendering, Destruction), the method name, and a brief explanation of when each hook is executed during a component's lifecycle.
+SOURCE: https://angular.dev/guide/components/lifecycle
+
+LANGUAGE: APIDOC
+CODE:
+
+```
+Phase	Method	Summary
+Creation	constructor	Standard JavaScript class constructor. Runs when Angular instantiates the component.
+Change Detection	ngOnInit	Runs once after Angular has initialized all the component's inputs.
+Change Detection	ngOnChanges	Runs every time the component's inputs have changed.
+Change Detection	ngDoCheck	Runs every time this component is checked for changes.
+Change Detection	ngAfterContentInit	Runs once after the component's _content_ has been initialized.
+Change Detection	ngAfterContentChecked	Runs every time this component content has been checked for changes.
+Change Detection	ngAfterViewInit	Runs once after the component's _view_ has been initialized.
+Change Detection	ngAfterViewChecked	Runs every time the component's view has been checked for changes.
+Rendering	afterNextRender	Runs once the next time that **all** components have been rendered to the DOM.
+Rendering	afterEveryRender	Runs every time **all** components have been rendered to the DOM.
+Destruction	ngOnDestroy	Runs once before the component is destroyed.
+```
+
+---
+
+TITLE: Angular Lifecycle Hook Simplification
+DESCRIPTION: Avoid embedding extensive or complex logic directly within Angular lifecycle hooks like `ngOnInit`. Instead, encapsulate such logic in dedicated, well-named methods and call these methods from the lifecycle hook. This enhances readability and maintainability.
+SOURCE: https://next.angular.dev/style-guide
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+// PREFER
+ngOnInit() {
+  this.startLogging();
+  this.runBackgroundTask();
+}// AVOID
+ngOnInit() {
+  this.logger.setMode('info');
+  this.logger.monitorErrors();
+  // ...and all the rest of the code that would be unrolled from these methods.
+}
+```
+
+---
+
+TITLE: Angular Component Dependency Injection using `inject`
+DESCRIPTION: This snippet demonstrates how to inject a service, `HeroService`, into an Angular component or other injectable context using the `inject` function. The `inject` function is a modern Angular API for dependency injection, allowing for more flexible and tree-shakable injection compared to traditional constructor injection, especially useful in functional contexts or when injecting outside of a class constructor.
+SOURCE: https://angular.dev/guide/di/dependency-injection
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+heroService = inject(HeroService)
+```
+
+---
+
+TITLE: Emit a Custom Event from an Angular Component
+DESCRIPTION: This example shows how to programmatically trigger a custom event by calling the `emit` method on an `OutputEmitterRef` property, which was initialized with the `output` function.
+SOURCE: https://angular.dev/guide/components/outputs
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+this.panelClosed.emit();
+```
+
+---
+
+TITLE: Two-way binding with plain properties
+DESCRIPTION: You can bind a plain JavaScript property to a model input. The 'banana-in-a-box' syntax creates a two-way binding, keeping the values of the model input and the component property in sync.
+SOURCE: https://angular.dev/guide/components/inputs
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+@Component({
+ /* ... */
+ // `value` is a model input.
+ // The parenthesis-inside-square-brackets syntax (aka "banana-in-a-box") creates a two-way binding
+ template: '<custom-slider [(value)]="volume" />',
+})
+export class MediaControls {
+ protected volume = 0;
+}
+```
+
+---
+
+TITLE: Set Request Headers with Object Literal in Angular HttpClient
+DESCRIPTION: Illustrates the simplest way to include custom request headers in an Angular `HttpClient` request by passing an object literal to the `headers` option. This snippet shows the beginning of a `get` request with headers.
+SOURCE: https://angular.dev/guide/http/making-requests
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+http.get(
+```
+
+---
+
+TITLE: Angular HttpClient: Set URL Parameters with Object Literal
+DESCRIPTION: Demonstrates how to add URL query parameters to an Angular HttpClient GET request by passing a plain JavaScript object literal to the `params` option. The request will include `?filter=all` in its URL, simplifying parameter configuration.
+SOURCE: https://angular.dev/guide/http/making-requests
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+http.get('/api/config', {
+  params: {filter: 'all'},
+}).subscribe(config => {
+  // ...
+});
+```
+
+---
+
+TITLE: Manually Enable Angular Hydration
+DESCRIPTION: For custom Angular SSR setups, enable hydration by importing `provideClientHydration` from `@angular/platform-browser` and adding it to the application's bootstrapping providers list.
+SOURCE: https://angular.dev/guide/hydration
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+import {
+bootstrapApplication,
+
+```
+
+---
+
+TITLE: Define Required Input and Computed Property in Angular Component
+DESCRIPTION: This code shows how to define a required input property (`id`) in an Angular component using `input.required<string>()`. It also demonstrates creating a computed signal (`hero`) that derives its value from the input, fetching data via a service. This pattern is useful for reactive data fetching based on component inputs.
+SOURCE: https://angular.dev/guide/routing/common-router-tasks
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+id = input.required<string>()
+hero = computed(() => this.service.getHero(id));
+```
+
+---
+
+TITLE: Angular Component Async Data Loading with @if and Async Pipe
+DESCRIPTION: Demonstrates how to conditionally render UI elements in an Angular component only after asynchronous data (e.g., from an Observable) has finished loading, using the `@if` directive combined with the `async` pipe. It also shows how to use `input.required` for defining required component inputs and `effect` for reactive side effects like fetching data based on input changes.
+SOURCE: https://angular.dev/guide/http/making-requests
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+import { AsyncPipe } from '@angular/common';
+@Component({
+  imports: [AsyncPipe],
+  template: `
+    @if (user$ | async; as user) {
+      <p>Name: {{ user.name }}</p>
+      <p>Biography: {{ user.biography }}</p>
+    }
+  `,
+})
+export class UserProfileComponent {
+  userId = input.required<string>();
+  user$!: Observable<User>;
+  private userService = inject(UserService);
+  constructor(): void {
+    effect(() => {
+      this.user$ = this.userService.getUser(this.userId());
+    });
+  }
+}
+```
+
+---
+
+TITLE: Configure Angular HttpClient with Multiple Interceptors
+DESCRIPTION: This code snippet demonstrates how to register HTTP interceptors when bootstrapping an Angular application. It uses `provideHttpClient` in conjunction with `withInterceptors` to supply an array of interceptor functions, such as `loggingInterceptor` and `cachingInterceptor`. Interceptors are processed in the order they are listed within the array.
+SOURCE: https://angular.dev/guide/http/interceptors
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+bootstrapApplication(AppComponent, {providers: [
+  provideHttpClient(
+    withInterceptors([loggingInterceptor, cachingInterceptor]),
+  )
+]});
+```
+
+---
+
+TITLE: Configure Angular Testing Module for HTTP Mocking
+DESCRIPTION: This snippet demonstrates how to set up the Angular testing module (`TestBed`) to enable HTTP client testing. It configures `ConfigService`, `provideHttpClient()`, and `provideHttpClientTesting()` to allow for mocking HTTP requests. It then shows how to inject `HttpTestingController` and a `ConfigService` to initiate an HTTP request for configuration data, preparing for a mock response.
+SOURCE: https://angular.dev/guide/http/testing
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+TestBed.configureTestingModule({
+  providers: [
+    ConfigService,
+    provideHttpClient(),
+    provideHttpClientTesting(),
+  ],
+});
+
+const httpTesting = TestBed.inject(HttpTestingController);
+
+// Load `ConfigService` and request the current configuration.
+const service = TestBed.inject(ConfigService);
+const config$ = this.configService.getConfig<Config>();
+
+// `firstValueFrom` subscribes to the `Observable`, which makes the HTTP request,
+// and creates a `Promise` of the response.
+const configPromise = config$
+```
+
+---
+
+TITLE: Configure Application-Level Service Provider in Angular Standalone
+DESCRIPTION: This TypeScript snippet demonstrates how to configure an `ApplicationConfig` object to provide a service, such as `HeroService`, at the application level. This configuration is used when bootstrapping a standalone Angular application.
+SOURCE: https://angular.dev/guide/di/dependency-injection
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+export const appConfig: ApplicationConfig = {
+  providers: [
+    { provide: HeroService },
+  ]
+};
+```
+
+---
+
+TITLE: Apply Host Directive to Angular Component
+DESCRIPTION: This snippet demonstrates how to apply a `MenuBehavior` directive to the host element of an `AdminMenu` component using the `hostDirectives` property in the `@Component` decorator. This statically applies the directive's host bindings to the component's host element.
+SOURCE: https://angular.dev/guide/directives/directive-composition-api
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+@Component({
+  selector: 'admin-menu',
+  template: 'admin-menu.html',
+  hostDirectives: [MenuBehavior],
+})
+export class AdminMenu { }
+```
+
+---
+
+TITLE: Define Angular Component with Inputs and Computed Signal
+DESCRIPTION: This Angular component, `UserProfile`, demonstrates the use of `input()` to define reactive properties (`firstName`, `lastName`) and `computed()` to create a derived signal (`fullName`). The `fullName` signal is used within the component's template to display the full name, showcasing how internal component logic can be leveraged in the view.
+SOURCE: https://next.angular.dev/style-guide
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+({
+ ...
+ template: `<p>{{ fullName() }}</p>`,
+})
+export class UserProfile {
+ firstName = input();
+ lastName = input();
+
+// `fullName` is not part of the component's public API, but is used in the template.
+ protected fullName = computed(() => `${this.firstName()} ${this.lastName()}`);
+}
+```
+
+---
+
+TITLE: Creating a Signal from an RxJS Observable with `toSignal`
+DESCRIPTION: The `toSignal` function allows you to create a signal that tracks the value of an RxJS Observable. This function offers similar behavior to Angular's `async` pipe in templates but provides greater flexibility, enabling its use anywhere within an application.
+SOURCE: https://angular.dev/ecosystem/rxjs-interop
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+import { Component } from '@angular/core';
+import { AsyncPipe } from '@angular/...
+```
+
+---
+
+TITLE: Angular: Provide Service at Application Root with ApplicationConfig
+DESCRIPTION: This example illustrates how to register an Angular service, like HeroService, at the application's root level. By adding the service to the providers array within the ApplicationConfig object, the service becomes globally available to all components, directives, and pipes throughout the application. The ApplicationConfig is then passed to the bootstrapApplication function during application initialization. Similar to component-level provisioning, this method ensures the service is always included in the application bundle.
+SOURCE: https://angular.dev/guide/di/dependency-injection
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+export const appConfig: ApplicationConfig = {
+    providers: [
+      { provide: HeroService },
+    ]
+};
+```
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+bootstrapApplication(AppComponent, appConfig)
+```
+
+---
+
+TITLE: Convert Angular Signal to RxJS Observable with toObservable
+DESCRIPTION: Demonstrates how to use the `toObservable` utility to create an RxJS Observable that tracks the value of an Angular signal. This allows interoperability between Angular's reactivity model and RxJS streams, emitting the signal's value whenever it changes.
+SOURCE: https://angular.dev/ecosystem/rxjs-interop
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+import { Component, signal } from '@angular/core';
+
+import { toObservable } from '@angular/core/rxjs-interop';
+
+@Component({
+  // ...
+})
+export class MyComponent {
+  readonly counter = signal(0);
+  readonly counter$ = toObservable(this.counter);
+}
+```
+
+---
+
+TITLE: Creating and Reading a Writable Angular Signal
+DESCRIPTION: This snippet demonstrates how to create a writable signal using the `signal` function with an initial value. It also shows how to read the signal's current value by calling it as a getter function, which allows Angular to track where the signal is used.
+SOURCE: https://angular.dev/guide/signals
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+const count = signal(0);
+// Signals are getter functions - calling them reads their value.
+console.log('The count is: ' + count());
+```
+
+---
+
+TITLE: Import Components in Angular's @Component Decorator
+DESCRIPTION: This example shows how to import and use another Angular component (ProfilePhoto) within the `imports` array of a parent component's `@Component` decorator. This is necessary for Angular to recognize and render the child component within the parent's template. For standalone components, they are directly added to the `imports` array.
+SOURCE: https://angular.dev/guide/components
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+import {ProfilePhoto} from './profile-photo';
+
+@Component({
+ // Import the `ProfilePhoto` component in
+ // order to use it in this component's template.
+ imports: [ProfilePhoto],
+ /* ... */
+})
+export class UserProfile { }
+```
+
+---
+
+TITLE: Declare Optional Input with Default Value in Angular
+DESCRIPTION: This snippet demonstrates how to declare an optional input in an Angular component using the `input()` function. By providing an initial value, the input is considered optional and its `InputSignal` type will include `undefined` if not explicitly set.
+SOURCE: https://angular.dev/guide/components/inputs
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+@Component({/*...*/})
+export class CustomSlider {
+  // Declare an optional input named value. Returns an `InputSignal<number | undefined>`.
+  value = input(0);
+}
+```
+
+---
+
+TITLE: Add Angular Router to Application Configuration
+DESCRIPTION: This snippet illustrates how to integrate the Angular router into an application's configuration. By calling `provideRouter` with the defined `routes` array within the `providers` array of `ApplicationConfig`, the routing functionality is made available throughout the application.
+SOURCE: https://angular.dev/guide/routing/define-routes
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+import { ApplicationConfig } from '@angular/core';
+import { provideRouter } from '@angular/router';
+import { routes } from './app.routes';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideRouter(routes),
+    // ...
+  ]
+};
+```
+
+---
+
+TITLE: Angular Expression: Optional Chaining Operator
+DESCRIPTION: Demonstrates the Angular optional chaining operator, safely accessing nested properties that might be null or undefined. Note: Angular's optional chaining returns `null` if the left side is `null` or `undefined`, unlike standard JavaScript which returns `undefined`.
+SOURCE: https://angular.dev/guide/templates/expression-syntax
+
+LANGUAGE: Angular Expression
+CODE:
+
+```
+someObj.someProp?.nestedProp
+```
+
+---
+
+TITLE: Use DestroyRef for Component Cleanup in Angular
+DESCRIPTION: `DestroyRef` provides a modern, injectable alternative to the `ngOnDestroy` lifecycle hook for performing cleanup logic when a component is destroyed. By injecting `DestroyRef` and calling its `onDestroy` method, you can register a callback function that will execute just before the component is removed from the DOM. This is useful for unsubscribing from observables or releasing resources.
+SOURCE: https://angular.dev/guide/components/lifecycle
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+@Component({
+  /* ... */
+})
+export class UserProfile {
+  constructor() {
+    inject(DestroyRef).onDestroy(() => {
+      console.log('UserProfile destruction');
+    });
+  }
+}
+```
+
+---
+
+TITLE: Updating a Writable Angular Signal with .set()
+DESCRIPTION: This example illustrates how to directly update the value of a writable signal using the `.set()` method. This method replaces the signal's current value with the new provided value, triggering reactivity for any consumers.
+SOURCE: https://angular.dev/guide/signals
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+count.set(3);
+```
+
+---
+
+TITLE: Define a Basic Angular Component for Harness Testing
+DESCRIPTION: This code defines a simple Angular component, `MyPopup`, which serves as an example for creating a custom component harness. It includes a button to toggle content visibility and uses Angular's `input` and `signal` for reactivity.
+SOURCE: https://angular.dev/guide/testing/creating-component-harnesses
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+@Component({
+  selector: 'my-popup',
+  template: `    <button (click)="toggle()">{{triggerText()}}</button>    @if (isOpen()) {      <div class="my-popup-content"><ng-content></ng-content></div>    }  `
+})
+class MyPopup {
+  triggerText = input('');
+  isOpen = signal(false);
+  toggle() {
+    this.isOpen.update((value) => !value);
+  }
+}
+```
+
+---
+
+TITLE: Using inject() in Angular Class Constructors and Field Initializers
+DESCRIPTION: This snippet demonstrates how the `inject` function can be used within an Angular class's constructor or as an initializer for class fields. The DI system ensures an injection context is available during class instantiation, allowing services to be injected directly.
+SOURCE: https://angular.dev/guide/di/dependency-injection-context
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+class MyComponent  {
+  private service1: Service1;
+  private service2: Service2 = inject(Service2); // In context
+  constructor() {
+    this.service1 = inject(Service1) // In context
+  }
+}
+```
+
+---
+
+TITLE: Conditionally Display Content with @if, @else-if, and @else Blocks
+DESCRIPTION: Shows how to use `@if`, `@else if`, and `@else` blocks to display different content based on multiple conditional expressions, providing alternative content paths in Angular templates.
+SOURCE: https://angular.dev/guide/templates/control-flow
+
+LANGUAGE: Angular Template
+CODE:
+
+```
+@if (a > b) {
+  {{a}} is greater than {{b}}}
+@else if (b > a) {
+  {{a}} is less than {{b}}}
+@else {
+  {{a}} is equal to {{b}}}
+```
+
+---
+
+TITLE: Angular Nested @defer Blocks with Hydration Triggers
+DESCRIPTION: This example demonstrates how to use nested `@defer` blocks in Angular for incremental hydration. It shows a parent block hydrating on interaction and a child block hydrating on hover, along with their respective `@placeholder` content. The parent hydrates first, followed by the child.
+SOURCE: https://angular.dev/guide/incremental-hydration
+
+LANGUAGE: Angular HTML
+CODE:
+
+```
+@defer (hydrate on interaction) {
+  <parent-block-cmp />
+  @defer (hydrate on hover) {
+    <child-block-cmp />
+  } @placeholder {
+    <div>Child placeholder</div>
+  }
+} @placeholder{
+  <div>Parent Placeholder</div>
+}
+```
+
+---
+
+TITLE: Inject an Angular Service into a Component
+DESCRIPTION: This example demonstrates how to inject the `HeroService` into the `HeroListComponent` using Angular's `inject` function. By declaring a private class field `heroService` and initializing it with `inject(HeroService)`, the component gains access to the service's methods and data, enabling dependency management.
+SOURCE: https://angular.dev/guide/di/creating-injectable-service
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+import { inject } from "@angular/core";
+
+export class HeroListComponent {
+  private heroService = inject(HeroService);
+}
+```
+
+---
+
+TITLE: Define Angular FormGroup for a Login Form
+DESCRIPTION: Illustrates the creation of an Angular `FormGroup` for a login form, defining `FormControl` instances for 'email' and 'password' with `nonNullable` option. This snippet highlights `FormGroup`'s use for forms with a fixed set of keys, contrasting it with `FormRecord` for dynamic key sets.
+SOURCE: https://angular.dev/guide/forms/typed-forms
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+const login = new FormGroup({
+ email: new FormControl('', {nonNullable: true}),
+ password: new FormControl(
+```
+
+---
+
+TITLE: Angular Router Outlet for Nested Views
+DESCRIPTION: This Angular directive acts as a placeholder in a component's template where routed components are dynamically loaded. It is crucial for displaying views associated with matched routes, especially when implementing child routes and nested navigation.
+SOURCE: https://angular.dev/guide/routing/define-routes
+
+LANGUAGE: HTML
+CODE:
+
+```
+<router-outlet>
+```
+
+---
+
+TITLE: Apply Host Directive to an Angular Component
+DESCRIPTION: This snippet illustrates the minimal use of a host directive on an Angular component. The 'AdminMenu' component applies 'MenuBehavior' using the 'hostDirectives' property within its '@Component' decorator, showcasing how a component can inherit and utilize behaviors defined in a separate host directive.
+SOURCE: https://angular.dev/guide/directives/directive-composition-api
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+@Component({
+ selector: 'admin-menu',
+ template: 'admin-menu.html',
+ hostDirectives: [MenuBehavior],
+})
+export class AdminMenu { }
+```
+
+---
+
+TITLE: Using an Angular Component with Host Directives in HTML
+DESCRIPTION: This HTML snippet demonstrates how to use an Angular component, `admin-menu`, which is configured with `hostDirectives`. It includes an `id` attribute and a `(closed)` event binding to `logMenuClosed()`, showcasing how host directives apply their host bindings to the host element.
+SOURCE: https://angular.dev/guide/directives/directive-composition-api
+
+LANGUAGE: HTML
+CODE:
+
+```
+<admin-menu id="top-menu" (closed)="logMenuClosed()"></admin-menu>
+```
+
+---
+
+TITLE: Angular Defer Block: Hydrate When Custom Condition Trigger
+DESCRIPTION: The `hydrate when` trigger accepts a custom conditional expression and loads the deferrable view's dependencies and hydrates the content when the condition becomes truthy. Note that `hydrate when` conditions only trigger when they are the top-most dehydrated `@defer` block, and the condition is specified in the parent component which must exist before it can be triggered.
+SOURCE: https://angular.dev/guide/incremental-hydration
+
+LANGUAGE: Angular
+CODE:
+
+```
+@defer (hydrate when condition) {  <large-cmp />} @placeholder {  <div>Large component placeholder</div>}
+```
+
+---
+
+TITLE: Angular Route Configuration with Specificity
+DESCRIPTION: This TypeScript code defines an array of Angular `Routes` demonstrating the critical importance of route order for URL matching. Routes are arranged from most specific (e.g., `users/new`) to less specific (e.g., `users`), with dynamic routes (`users/:id`) and a wildcard route (`**`) placed accordingly. Angular's 'first-match wins' strategy means the router stops at the first matching route, making correct ordering essential for proper application navigation.
+SOURCE: https://angular.dev/guide/routing/define-routes
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+const routes: Routes = [
+  { path: '', component: HomeComponent }, // Empty path
+  { path: 'users/new', component: NewUserComponent }, // Static, most specific
+  { path: 'users/:id', component: UserDetailComponent }, // Dynamic
+  { path: 'users', component: UsersComponent }, // Static, less specific
+  { path: '**', component: NotFoundComponent } // Wildcard - always last
+];
+```
+
+---
+
+TITLE: Understanding ChangeDetectionStrategy.OnPush for Zoneless Compatibility
+DESCRIPTION: The `OnPush` change detection strategy is a recommended step towards zoneless compatibility for application components. It aligns components with Angular's explicit notification mechanisms, though library components hosting user components with `ChangeDetectionStrategy.Default` may need to avoid it to ensure proper child component refreshing.
+SOURCE: https://angular.dev/guide/zoneless
+
+LANGUAGE: APIDOC
+CODE:
+
+```
+ChangeDetectionStrategy.OnPush:
+- Recommended for zoneless compatibility.
+- Ensures components rely on explicit notifications (markForCheck, signals, AsyncPipe).
+- Not always suitable for library components hosting user components with ChangeDetectionStrategy.Default.
+```
+
+---
+
+TITLE: Injecting Angular Service into Component using Constructor
+DESCRIPTION: This snippet illustrates the traditional method of injecting an Angular service into a component via its constructor. The `HeroService` is declared as a private parameter, and Angular's DI system automatically provides an instance.
+SOURCE: https://angular.dev/guide/di/creating-injectable-service
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+constructor(private heroService: HeroService)
+```
+
+---
+
+TITLE: Create a Signal from an RxJS Observable with `toSignal`
+DESCRIPTION: Demonstrates how to use the `toSignal` function from `@angular/core/rxjs-interop` to convert an RxJS Observable into an Angular signal. This signal tracks the Observable's value, similar to the `async` pipe, but offers more flexibility for use within components or services. The subscription is automatically managed, unsubscribing when the calling component or service is destroyed. It's crucial to reuse the returned signal to avoid redundant subscriptions.
+SOURCE: https://angular.dev/ecosystem/rxjs-interop
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+import { Component } from '@angular/core';
+import { AsyncPipe } from '@angular/common';
+import { interval } from 'rxjs';
+import { toSignal } from '@angular/core/rxjs-interop';
+
+@Component({
+  template: `{{ counter() }}`,
+})
+export class Ticker {
+  counterObservable = interval(1000);
+  // Get a `Signal` representing the `counterObservable`'s value.
+  counter = toSignal(this.counterObservable, {initialValue: 0});
+}
+```
+
+---
+
+TITLE: Declaring and Reading Angular Input Signals
+DESCRIPTION: This snippet demonstrates how to declare a component input using the `input` function with a default value. It also shows how to read the input's value by calling the signal within a computed expression.
+SOURCE: https://angular.dev/guide/components/inputs
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+import {Component, input} from '@angular/core';
+@Component({/*...*/})export class CustomSlider {  // Declare an input named 'value' with a default value of zero.   value = input(0);  // Create a computed expression that reads the value input  label = computed(() => `The slider's value is ${this.value()}`); }
+```
+
+---
+
+TITLE: Angular Router: Prioritizing Routes by Specificity
+DESCRIPTION: Explains Angular's "first-match wins" routing strategy, highlighting the importance of placing more specific routes before less specific ones. This ensures the router correctly matches URLs to the intended components based on their definition order.
+SOURCE: https://angular.dev/guide/routing/define-routes
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+const routes: Routes = [
+  { path: '', component: HomeComponent },              // Empty path
+  { path: 'users/new', component: NewUserComponent },  // Static, most specific
+  { path: 'users/:id', component: UserDetailComponent }, // Dynamic
+  { path: 'users', component: UsersComponent },        // Static, less specific
+  { path: '**', component: NotFoundComponent }         // Wildcard - always last
+];
+```
+
+---
+
+TITLE: Inject Application Configuration in Angular Component Constructor
+DESCRIPTION: Shows how to retrieve the previously provided application configuration object within an Angular component's constructor. The `inject` function is used with the `APP_CONFIG` token to access the configuration, which can then be used to initialize component properties.
+SOURCE: https://angular.dev/guide/di/dependency-injection-providers
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+export class AppComponent {
+  constructor() {
+    const config = inject(APP_CONFIG);
+    this.title = config.title;
+  }
+}
+```
+
+---
+
+TITLE: Conditionally Display Content with @if Block
+DESCRIPTION: Demonstrates how to use the `@if` block to conditionally display content when its condition expression is truthy in Angular templates.
+SOURCE: https://angular.dev/guide/templates/control-flow
+
+LANGUAGE: Angular Template
+CODE:
+
+```
+@if (a > b) {
+  <p>{{a}} is greater than {{b}}</p>
+}
+```
+
+---
+
+TITLE: Angular Hydration: Defer on Viewport
+DESCRIPTION: This trigger loads a deferred view's dependencies and hydrates its content when the specified element enters the user's viewport. It utilizes the Intersection Observer API for efficient detection, ideal for content that should load just before or as it becomes visible.
+SOURCE: https://angular.dev/guide/incremental-hydration
+
+LANGUAGE: Angular Template
+CODE:
+
+```
+@defer (hydrate on viewport) {
+  <large-cmp />
+} @placeholder
+```
+
+---
+
+TITLE: Angular @defer Hydration Triggers Reference
+DESCRIPTION: This API documentation details the `hydrate` triggers available for Angular's `@defer` blocks. These triggers allow developers to precisely control when deferred content is loaded and hydrated on the client side, building on server-side rendering. Multiple triggers can be specified, with hydration occurring if any condition is met.
+SOURCE: https://angular.dev/guide/incremental-hydration
+
+LANGUAGE: APIDOC
+CODE:
+
+```
+Hydration Triggers for @defer blocks:
+  Purpose: Control when Angular loads and hydrates deferred content.
+  Syntax: @defer (hydrate on <condition>; hydrate when <condition>; hydrate never) { ... }
+
+  Types of Hydrate Triggers:
+    - hydrate on:
+        Description: Specifies a condition for when hydration is triggered for the @defer block.
+        Available Conditions:
+          - idle:
+              Description: Triggers when the browser is idle.
+          - viewport:
+              Description: Triggers when the browser is idle. (As per source documentation)
+    - hydrate when:
+        Description: (Further details not provided in the text.)
+    - hydrate never:
+        Description: (Further details not provided in the text.)
+```
+
+---
+
+TITLE: Default CLI-Generated Angular Service Structure
+DESCRIPTION: This code snippet shows the default structure of an Angular service generated by the CLI. It includes the `@Injectable()` decorator, which marks the class as injectable, and `providedIn: 'root'`, making the service available application-wide.
+SOURCE: https://angular.dev/guide/di/creating-injectable-service
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+import { Injectable } from '@angular/core';@Injectable({  providedIn: 'root',})export class HeroService {}
+```
+
+---
+
+TITLE: Angular Effect Function Basic Usage
+DESCRIPTION: This snippet shows the basic usage of the `effect` function in Angular. It creates an effect that logs the current value of the `count` signal whenever it changes, demonstrating how effects react to signal updates.
+SOURCE: https://angular.dev/guide/signals
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+effect(() => {
+  console.log(`The current count is: ${count()}`);
+});
+```
+
+---
+
+TITLE: Update Angular Signal Value
+DESCRIPTION: Demonstrates how to update an Angular signal's value using its 'update' method. This method takes a callback function that receives the current signal value and returns the new value, ensuring reactive updates.
+SOURCE: https://angular.dev/guide/components/inputs
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+this.value.update(oldValue => oldValue + 10);
+```
+
+---
+
+TITLE: Updating a Writable Angular Signal with .update()
+DESCRIPTION: This snippet shows how to update a writable signal's value by computing a new value based on its previous state using the `.update()` method. This is particularly useful for incremental changes or transformations, ensuring the update logic is encapsulated.
+SOURCE: https://angular.dev/guide/signals
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+// Increment the count by 1.
+count.update(value => value + 1);
+```
+
+---
+
+TITLE: Bind Angular Component and Directive Input Properties
+DESCRIPTION: Illustrates how to use property binding to set input properties on Angular components and directives. The syntax is identical to binding native HTML properties.
+SOURCE: https://angular.dev/guide/templates/binding
+
+LANGUAGE: HTML
+CODE:
+
+```
+<!-- Bind the `value` property on the `MyListbox` component instance. -->
+<my-listbox [value]="mySelection" />
+```
+
+LANGUAGE: HTML
+CODE:
+
+```
+<!-- Bind to the `ngSrc` property of the `NgOptimizedImage` directive  -->
+<img [ngSrc]="profilePhotoUrl" alt="The current user's profile photo">
+```
+
+---
+
+TITLE: Composing Angular Directives with hostDirectives
+DESCRIPTION: This TypeScript code defines three Angular directives: `Menu`, `Tooltip`, and `MenuWithTooltip`. `MenuWithTooltip` demonstrates the use of `hostDirectives` to compose the behaviors of `Tooltip` and `Menu` directives, enabling transitive aggregation of functionalities. When `MenuWithTooltip` is applied, it creates instances of all listed host directives, and their host bindings apply to the host element.
+SOURCE: https://angular.dev/guide/directives/directive-composition-api
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+@Directive({...})
+export class Menu { }
+
+@Directive({...})
+export class Tooltip { }
+
+// MenuWithTooltip can compose behaviors from multiple other directives
+@Directive({
+ hostDirectives: [Tooltip, Menu],
+})
+```

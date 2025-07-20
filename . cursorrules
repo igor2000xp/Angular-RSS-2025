@@ -1,0 +1,198 @@
+# Angular RSS 2025 - Development Context & Rules
+
+## Project Overview
+
+This is an Angular 20.1.0 RSS reader application built with TypeScript, following modern Angular patterns and best practices.
+
+## Angular Development Best Practices
+
+### TypeScript Configuration
+
+- Always use `strict: true` type checking
+- Prefer type inference when obvious
+- Avoid `any`; use `unknown` with type guards instead
+- Use proper interfaces and types for RSS data structures
+
+### Component Architecture
+
+- **Always use standalone components** (Angular 15+ pattern)
+- Use **signals** and `computed()` for reactive state management
+- Implement `ChangeDetectionStrategy.OnPush` for performance
+- Keep components small and single-responsibility
+- Use `input()` and `output()` functions instead of decorators
+- Prefer inline templates for small components
+
+### Modern Template Syntax
+
+- Use **native control flow**: `@if`, `@for`, `@switch` instead of `*ngIf`, `*ngFor`, `*ngSwitch`
+- Use `[class]` and `[style]` bindings instead of `ngClass` and `ngStyle`
+- Use `async` pipe for observables
+- Avoid complex logic in templates
+
+### Service Patterns
+
+- Design services with single responsibility
+- Use `providedIn: 'root'` for singleton services
+- Use `inject()` function instead of constructor injection
+- Implement proper error handling for RSS feeds
+
+### State Management
+
+- Use **signals** for local component state
+- Use `computed()` for derived values
+- Keep state pure and predictable
+- Use RxJS only when necessary (HTTP calls, complex async operations)
+
+### Performance & Assets
+
+- Use `NgOptimizedImage` for all static images
+- Implement lazy loading for feature routes
+- Use OnPush change detection strategy
+- Implement virtual scrolling for large RSS feed lists
+
+## RSS-Specific Patterns
+
+### Data Models
+
+```typescript
+interface RSSFeed {
+  id: string;
+  title: string;
+  url: string;
+  description?: string;
+  lastUpdated: Date;
+  isActive: boolean;
+}
+
+interface RSSItem {
+  id: string;
+  feedId: string;
+  title: string;
+  description: string;
+  link: string;
+  publishDate: Date;
+  isRead: boolean;
+}
+```
+
+### Service Architecture
+
+- **FeedService**: Centralized RSS feed management
+- **RSSParserService**: XML parsing and format handling
+- **StorageService**: Local storage and caching
+- **ErrorHandlerService**: Global error handling
+
+### Component Structure
+
+```
+App Component (Root)
+├── Header Component
+├── Sidebar Component (Feed Navigation)
+├── Main Content Area
+│   ├── Feed List Component
+│   ├── Article List Component
+│   └── Article Detail Component
+└── Footer Component
+```
+
+### 🔄 Memory Bank Updated
+
+I've also documented this integration in the Memory Bank for future reference. The Angular development context includes:
+
+- **Modern Angular 20+ patterns** (signals, standalone components, control flow)
+- **RSS-specific architecture** patterns
+- **Performance optimization** strategies
+- **Context engineering** guidelines for AI assistance
+- **Security considerations** for RSS content handling
+- **Testing and code quality** standards
+
+### 📝 Next Steps
+
+1. Create the `.cursorrules` file with the content provided above
+2. This will provide AI assistants with comprehensive context about:
+   - Modern Angular development patterns
+   - RSS reader specific requirements
+   - Performance and security considerations
+   - Code quality standards
+
+The rules are based on the latest Angular best practices from the official Angular team and incorporate the Context7 approach of providing comprehensive development context for AI-assisted coding.
+
+**Ready for Implementation**: With VAN mode completed and these development rules in place, your project is now ready to transition to PLAN mode for comprehensive RSS reader implementation planning.
+
+## Code Quality Standards
+
+### ESLint Rules
+
+- Follow Angular ESLint recommended rules
+- Prefer inject() over constructor injection
+- Use standalone components
+- Implement OnPush change detection
+- Use signals over reactive forms where appropriate
+
+### Testing Patterns
+
+- Write unit tests for all services
+- Test component interactions
+- Mock HTTP calls for RSS feeds
+- Test error scenarios (malformed feeds, network errors)
+
+### File Naming Conventions
+
+- Use dash-delimited file names with type indicators
+- Example: `feed-manager.component.ts`, `rss-parser.service.ts`
+- Components: `*.component.ts`
+- Services: `*.service.ts`
+- Models: `*.model.ts` or `*.interface.ts`
+
+## Security Considerations
+
+- Sanitize RSS content before display using Angular's DomSanitizer
+- Validate RSS feed URLs
+- Implement Content Security Policy (CSP)
+- Handle CORS issues with proxy configuration
+
+## Performance Optimization
+
+- Implement caching for RSS feeds
+- Use virtual scrolling for large article lists
+- Lazy load feature modules
+- Optimize bundle size with tree shaking
+- Use service workers for offline functionality
+
+## Development Workflow
+
+- Use Angular CLI for scaffolding
+- Follow conventional commits
+- Run linting and formatting on pre-commit
+- Maintain comprehensive documentation
+
+## Context Engineering for AI Assistance
+
+When working with AI assistants on this project:
+
+1. **Provide Full Context**: Always include relevant component templates, services, and models
+2. **Specify Angular Version**: Mention Angular 20.1.0 and use modern patterns
+3. **Include Error Details**: When debugging, provide full error messages and stack traces
+4. **Architecture Context**: Explain how the component fits into the overall RSS reader structure
+5. **State Management**: Clarify whether to use signals, observables, or both
+6. **Performance Requirements**: Mention if the solution needs to handle large RSS feeds
+
+## Common Patterns to Use
+
+- Signal-based reactive programming
+- Standalone components with explicit imports
+- Function-based dependency injection
+- Native control flow in templates
+- Error boundaries for RSS parsing failures
+- Progressive Web App features for offline reading
+
+## Patterns to Avoid
+
+- Module-based architecture (use standalone)
+- Constructor-based dependency injection
+- Structural directives (*ngIf, *ngFor)
+- ngClass and ngStyle
+- Complex template expressions
+- Direct DOM manipulation
+
+This rule ensures that all generated code follows modern Angular best practices and is optimized for the RSS reader use case while maintaining excellent performance and maintainability.

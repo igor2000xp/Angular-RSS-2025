@@ -1,0 +1,653 @@
+---
+description: Implements a caching mechanism for an HTTP GET request using the RxJS shareReplay operator. Subsequent calls to getCommonMovies() will receive the cached response without making a new HTTP request until the observable completes.
+globs:
+alwaysApply: true
+---
+
+TITLE: Caching API Calls with shareReplay - Angular/RxJS - TypeScript
+DESCRIPTION: Implements a caching mechanism for an HTTP GET request using the RxJS shareReplay operator. Subsequent calls to getCommonMovies() will receive the cached response without making a new HTTP request until the observable completes.
+SOURCE: https://github.com/avivharuzi/angular-best-practices/blob/main/README.md#_snippet_31
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+class MoviesService {
+  private commonMovies$: Observable<Movie[]> | null = null;
+
+
+  getCommonMovies(): Observable<Movie[]> {
+    if (!this.commonMovies$) {
+      this.commonMovies$ = this.httpClient.get<Movie[]>('/api/movies/common').pipe(
+        shareReplay(1),
+      );
+    }
+
+    return this.commonMovies$;
+  }
+}
+```
+
+---
+
+TITLE: Exposing Subject as Observable (After) - TypeScript
+DESCRIPTION: Illustrates the practice of keeping a `Subject` or `BehaviorSubject` private within a service and exposing only its `Observable` counterpart using `asObservable()`. This prevents external components or services from directly calling `next()`, `error()`, or `complete()` on the subject, ensuring controlled state updates through dedicated methods. Requires RxJS Subjects and Observables.
+SOURCE: https://github.com/avivharuzi/angular-best-practices/blob/main/README.md#_snippet_15
+
+LANGUAGE: typescript
+CODE:
+
+```
+export class CartService {
+  private selectedItem: BehaviorSubject<CartItem | null> = new BehaviorSubject<CartItem | null>(null);
+
+  readonly selectedItem$: Observable<CartItem | null> = this.selectedItem.asObservable();
+
+  updateSelectedItem(item: CartItem): void {
+    this.selectedItem.next(item);
+  }
+}
+```
+
+---
+
+TITLE: Sanitizing Untrusted HTML with DomSanitizer - TypeScript
+DESCRIPTION: Demonstrates how to use Angular's `DomSanitizer` service with `SecurityContext.HTML` to sanitize potentially untrusted HTML content before using it, for example, with `[innerHTML]`. Sanitization removes dangerous code like script tags or event handlers to mitigate Cross-Site Scripting (XSS) vulnerabilities when binding external or user-provided HTML. Requires the `DomSanitizer` service injected into the component's constructor.
+SOURCE: https://github.com/avivharuzi/angular-best-practices/blob/main/README.md#_snippet_21
+
+LANGUAGE: typescript
+CODE:
+
+```
+export class SomeComponent {
+  content = this.domSanitizer.sanitize(
+    SecurityContext.HTML,
+    `<img src="" alt="" onerror="alert('You have been attacked')" />` // This data coule be come from outside API
+  );
+
+  constructor(private domSanitizer: DomSanitizer) {}
+}
+```
+
+---
+
+TITLE: Installing and Checking Angular CLI
+DESCRIPTION: These shell commands demonstrate how to install the Angular Command Line Interface (CLI) globally using npm and how to verify the installed version. The Angular CLI is a powerful tool for generating, building, and maintaining Angular projects according to best practices.
+SOURCE: https://github.com/avivharuzi/angular-best-practices/blob/main/README.md#_snippet_1
+
+LANGUAGE: Shell
+CODE:
+
+```
+# Install Angular CLI
+npm i -g @angular/cli
+
+# Check Angular CLI version
+ng version
+```
+
+---
+
+TITLE: Defining Lazy Loaded Route - Angular - TypeScript
+DESCRIPTION: Configures an Angular route to lazy load a module. The module and its components are only loaded when the route is activated, improving initial application load time.
+SOURCE: https://github.com/avivharuzi/angular-best-practices/blob/main/README.md#_snippet_28
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+const routes: Routes = [
+  {
+    path: '',
+    pathMatch: 'full',
+    loadChildren: () => import('./features/home/home.module').then(m => m.HomeModule),
+  },
+];
+```
+
+---
+
+TITLE: Combining RxJS Observables with withLatestFrom (After) - TypeScript
+DESCRIPTION: Shows the recommended approach using RxJS operators like `withLatestFrom` and `first` to combine values from multiple observables without nested subscriptions. This improves readability, declarative style, and simplifies subscription management within the observable chain. Requires `rxjs`.
+SOURCE: https://github.com/avivharuzi/angular-best-practices/blob/main/README.md#_snippet_6
+
+LANGUAGE: typescript
+CODE:
+
+```
+firstObservable$.pipe(
+    withLatestFrom(secondObservable$),
+    first()
+  )
+  .subscribe(([firstValue, secondValue]) => {
+      console.log(`Combined values are: ${firstValue} & ${secondValue}`);
+  });
+```
+
+---
+
+TITLE: Configuring Angular Strict Mode
+DESCRIPTION: This JSON snippet shows the configuration required in the compiler options (typically in tsconfig.json) to enable Angular's strict mode. It enforces stricter type checking, consistent file casing, and best practices like explicit parameter types and input access modifiers, leading to more robust code.
+SOURCE: https://github.com/avivharuzi/angular-best-practices/blob/main/README.md#_snippet_0
+
+LANGUAGE: JSON
+CODE:
+
+```
+{
+  "compilerOptions": {
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true
+  },
+  "angularCompilerOptions": {
+    "enableI18nLegacyMessageIdFormat": false,
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true
+  }
+}
+```
+
+---
+
+TITLE: Declaring Class Property with Interface Type (After) - TypeScript
+DESCRIPTION: Shows the recommended practice of defining an interface to specify the expected structure of an object and then typing a class property with that interface. This enforces type safety, enabling compile-time checks for property access and assignment, making refactoring easier and reducing bugs. Requires an Angular component and a `Movie` interface.
+SOURCE: https://github.com/avivharuzi/angular-best-practices/blob/main/README.md#_snippet_13
+
+LANGUAGE: typescript
+CODE:
+
+```
+interface Movie {
+  title: string;
+}
+
+export class MovieComponent {
+  movie: Movie;
+
+  constructor() {
+    this.movie = {
+      title: 'Avengers',
+      // We can't decalre other properties...
+    };
+  }
+}
+```
+
+---
+
+TITLE: Using Safe Navigation Operator in Angular Template - HTML
+DESCRIPTION: Illustrates the use of Angular's safe navigation operator (`?.`) in an HTML template to access properties of objects that might be null or undefined. If any part of the path before `?.` is null or undefined, the expression evaluates to `undefined` instead of throwing an error, preventing application crashes. Useful when binding to optional data. Requires an Angular component with an optional `movie` object.
+SOURCE: https://github.com/avivharuzi/angular-best-practices/blob/main/README.md#_snippet_20
+
+LANGUAGE: html
+CODE:
+
+```
+<ng-container *ngif="movie">
+  <p>{{ movie.details?.description }}</p>
+</ng-container>
+```
+
+---
+
+TITLE: Performing Shallow Copy Using Spread Operator - TypeScript
+DESCRIPTION: Demonstrates using the JavaScript spread operator (`...`) to create a shallow copy of an array. This is a common pattern for immutability at the top level. Note that for arrays/objects nested within the copied structure, the spread operator copies references, not the nested data itself. Useful for simple data structures or the first level of complex ones.
+SOURCE: https://github.com/avivharuzi/angular-best-practices/blob/main/README.md#_snippet_18
+
+LANGUAGE: typescript
+CODE:
+
+```
+// Somewhere in the code we have list of movies...
+const movies = [
+  {
+    title: 'Avengers',
+    year: 2012
+  },
+];
+
+// And in other place we get the movies list...
+const updatedMovies = [...movies]; // Update with spread operator...
+```
+
+---
+
+TITLE: Declaring Input Type as Union of String Literals (After) - TypeScript
+DESCRIPTION: Shows the recommended practice of using TypeScript union types with string literals for `@Input` properties that should only accept a specific set of values. This provides compile-time type checking, catching errors during development if an invalid string value is provided. Requires an Angular component.
+SOURCE: https://github.com/avivharuzi/angular-best-practices/blob/main/README.md#_snippet_11
+
+LANGUAGE: typescript
+CODE:
+
+```
+export class ButtonComponent {
+  @Input() type: 'submit' | 'reset' | 'button' = 'button';
+}
+```
+
+---
+
+TITLE: Injecting InjectionToken Dependency - Angular - TypeScript
+DESCRIPTION: Demonstrates how to inject a dependency provided via an InjectionToken into a service or component constructor using the @Inject decorator.
+SOURCE: https://github.com/avivharuzi/angular-best-practices/blob/main/README.md#_snippet_25
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+@Injectable({
+  provided: 'root',
+})
+export class SomeService {
+  constructor(@Inject(TITLE_TOKEN) private readonly title: string) {}
+}
+```
+
+---
+
+TITLE: Providing InjectionToken Dependency - Angular - TypeScript
+DESCRIPTION: Shows how to configure an Angular module to provide a specific value ('My Site') associated with the defined InjectionToken. This is the standard and safer way to provide non-class dependencies.
+SOURCE: https://github.com/avivharuzi/angular-best-practices/blob/main/README.md#_snippet_24
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+@NgModule({
+  providers: [
+    {
+      provide: TITLE_TOKEN,
+      useValue: 'My Site',
+    },
+  ],
+})
+export class SomeModule {}
+```
+
+---
+
+TITLE: Defining InjectionToken - Angular - TypeScript
+DESCRIPTION: Defines a unique and symbolic InjectionToken for a dependency. Using InjectionToken instead of plain strings for non-class dependencies is the recommended practice to prevent naming collisions.
+SOURCE: https://github.com/avivharuzi/angular-best-practices/blob/main/README.md#_snippet_23
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+import { InjectionToken } from '@angular/core';
+
+export const TITLE_TOKEN = new InjectionToken<string>('title');
+```
+
+---
+
+TITLE: Implementing trackBy Function for ngFor (After) - TypeScript
+DESCRIPTION: Provides the TypeScript implementation of a `trackBy` function used with Angular's `ngFor`. This function accepts the item's index and the item itself, returning a unique identifier (typically an ID property) for the item. Angular uses this ID to track elements in the DOM. Requires an Angular component and potentially an interface like `Movie`.
+SOURCE: https://github.com/avivharuzi/angular-best-practices/blob/main/README.md#_snippet_9
+
+LANGUAGE: typescript
+CODE:
+
+```
+trackByFn(index, movie: Movie): string {
+  return movie.id;
+}
+```
+
+---
+
+TITLE: Iterating with ngFor Using trackBy (After) - HTML
+DESCRIPTION: Shows the recommended way to use Angular's `ngFor` directive by including the `trackBy` function. This helps Angular optimize DOM updates by knowing which specific elements have changed, been added, or removed, leading to better performance, especially with large lists or frequent updates. Requires an Angular component with a `movies` array and a `trackByFn` method.
+SOURCE: https://github.com/avivharuzi/angular-best-practices/blob/main/README.md#_snippet_8
+
+LANGUAGE: html
+CODE:
+
+```
+<li *ngFor="let movie of movies; trackBy: trackByFn">{{ movie.title }}</li>
+```
+
+---
+
+TITLE: Providing Component-Level Service - Angular - TypeScript
+DESCRIPTION: Shows how to scope a service's lifetime and instance to a specific component by providing it in the component's providers array. This ensures the service is instantiated only when the component is created and can be tree-shaken.
+SOURCE: https://github.com/avivharuzi/angular-best-practices/blob/main/README.md#_snippet_32
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+@Component({
+  selector: 'app-navbar',
+  providers: [NavbarService],
+})
+export class NavbarComponent {}
+```
+
+---
+
+TITLE: Performing Deep Cloning Using JSON Parse/Stringify - TypeScript
+DESCRIPTION: Shows a common technique for creating a deep copy of a JavaScript object or array that contains nested structures using `JSON.parse(JSON.stringify())`. This method serializes the object to JSON and then parses it back, effectively creating a new object graph. It has limitations for non-JSON data types (functions, dates, undefined). Provides a deep copy of the `movies` array example.
+SOURCE: https://github.com/avivharuzi/angular-best-practices/blob/main/README.md#_snippet_19
+
+LANGUAGE: typescript
+CODE:
+
+```
+const updatedMovies = JSON.parse(JSON.stringify(movies));
+```
+
+---
+
+TITLE: Analyzing Angular Bundle Size with Webpack Analyzer (Shell)
+DESCRIPTION: Provides shell commands to install the webpack-bundle-analyzer tool and generate a visual representation of your Angular bundle's contents. This helps identify which modules and dependencies contribute most to the final bundle size, aiding optimization efforts. Requires Node.js, npm, and Angular CLI.
+SOURCE: https://github.com/avivharuzi/angular-best-practices/blob/main/README.md#_snippet_33
+
+LANGUAGE: shell
+CODE:
+
+```
+npm i -D webpack-bundle-analyzer
+ng build --stats-json # Build angular with stats JSON file
+webpack-bundle-analyzer dist/my-app/stats.json
+```
+
+---
+
+TITLE: Requiring Input via Component Selector - TypeScript
+DESCRIPTION: Demonstrates how to make an `@Input` property mandatory by including its attribute name in the component's `@Component` selector. For example, `selector: 'movie-list[movies]'` ensures that the `movies` attribute must be present when the component is used, causing an error at compile time (AoT) or application start if missing. Requires an Angular component with an `@Input`. Other inputs on the same component without this selector syntax remain optional.
+SOURCE: https://github.com/avivharuzi/angular-best-practices/blob/main/README.md#_snippet_14
+
+LANGUAGE: typescript
+CODE:
+
+```
+@Component({
+  selector: 'movie-list[movies]',
+})
+export class MovieListComponent {
+  @Input() movies: Movies[];
+}
+```
+
+---
+
+TITLE: Preventing Feature Module Import - Angular - TypeScript
+DESCRIPTION: Implements a pattern within an Angular module to prevent it from being imported into feature modules. It enforces that the module can only be imported once, typically in the root AppModule, often used with a static forRoot method for configuration.
+SOURCE: https://github.com/avivharuzi/angular-best-practices/blob/main/README.md#_snippet_26
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+import {
+  ModuleWithProviders,
+  NgModule,
+  Optional,
+  SkipSelf,
+} from '@angular/core';
+
+import {
+  AUTH_CONFIG_TOKEN,
+  AuthConfig,
+  authConfigDefault,
+  AuthService,
+} from './auth';
+
+@NgModule()
+export class AuthModule {
+  constructor(@Optional() @SkipSelf() parentModule?: AuthModule) {
+    if (parentModule) {
+      throw new Error(
+        'AuthModule is already loaded. Import it in the AppModule only'
+      );
+    }
+  }
+
+  static forRoot(
+    config: Partial<AuthConfig> = {}
+  ): ModuleWithProviders<AuthModule> {
+    return {
+      ngModule: AuthModule,
+      providers: [
+        AuthService,
+        {
+          provide: AUTH_CONFIG_TOKEN,
+          useValue: {
+            ...authConfigDefault,
+            ...config,
+          },
+        },
+      ],
+    };
+  }
+}
+```
+
+---
+
+TITLE: Defining Production Environment Variables
+DESCRIPTION: This TypeScript code snippet defines environment-specific variables for a production build of an Angular application. It sets the 'production' flag to true and specifies a production base URL for API calls. This file (environment.prod.ts) is used when building for production.
+SOURCE: https://github.com/avivharuzi/angular-best-practices/blob/main/README.md#_snippet_3
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+export const environment = {
+  production: true,
+  baseApiUrl: 'https://api.example.com',
+};
+```
+
+---
+
+TITLE: Defining Development Environment Variables
+DESCRIPTION: This TypeScript code snippet defines environment-specific variables for a development build of an Angular application. It sets the 'production' flag to false and specifies a local base URL for API calls. This file (environment.ts) is the default environment configuration.
+SOURCE: https://github.com/avivharuzi/angular-best-practices/blob/main/README.md#_snippet_2
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+export const environment = {
+  production: false,
+  baseApiUrl: 'http://localhost:8080',
+};
+```
+
+---
+
+TITLE: Iterating with ngFor Without trackBy (Before) - HTML
+DESCRIPTION: Illustrates the basic usage of Angular's `ngFor` directive to iterate over an array and render list items in a template. Without the `trackBy` function, Angular re-renders the entire DOM element structure for the list when the input array changes, regardless of whether individual items changed. Requires an Angular component with a `movies` array.
+SOURCE: https://github.com/avivharuzi/angular-best-practices/blob/main/README.md#_snippet_7
+
+LANGUAGE: html
+CODE:
+
+```
+<li *ngFor="let movie of movies">{{ movie.title }}</li>
+```
+
+---
+
+TITLE: Calling Method Directly in Angular Template (Before) - HTML
+DESCRIPTION: Shows the anti-pattern of binding directly to a component method call within an Angular template expression (e.g., `{{ getTitle() }}`). This method is called repeatedly during every change detection cycle, potentially causing significant performance issues, especially for computationally expensive methods. Requires an Angular component with the specified method.
+SOURCE: https://github.com/avivharuzi/angular-best-practices/blob/main/README.md#_snippet_16
+
+LANGUAGE: html
+CODE:
+
+```
+<h1>{{ getTitle() }}</h1>
+```
+
+---
+
+TITLE: Avoiding Nested RxJS Subscriptions (Before) - TypeScript
+DESCRIPTION: Demonstrates an anti-pattern in RxJS where one observable is subscribed within the subscription callback of another. This nested structure can make code harder to read and manage subscriptions effectively, potentially leading to memory leaks. Requires `rxjs` observables.
+SOURCE: https://github.com/avivharuzi/angular-best-practices/blob/main/README.md#_snippet_5
+
+LANGUAGE: typescript
+CODE:
+
+```
+firstObservable$.pipe(
+    take(1)
+  )
+  .subscribe(firstValue => {
+    secondObservable$.pipe(
+        take(1)
+      )
+      .subscribe(secondValue => {
+        console.log(`Combined values are: ${firstValue} & ${secondValue}`);
+      });
+  });
+```
+
+---
+
+TITLE: Dividing Imports by Category
+DESCRIPTION: This TypeScript snippet illustrates a recommended practice for organizing import statements within a file. Imports are grouped by origin: Angular core/packages, RxJS, Third-party libraries, and local project files, often separated by empty lines or comments for improved readability and maintainability.
+SOURCE: https://github.com/avivharuzi/angular-best-practices/blob/main/README.md#_snippet_4
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+// Angular.
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+
+// RxJS.
+import { map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+
+// Third Parties.
+import { MatDialog } from '@angular/material/dialog';
+
+// Local.
+import { AuthFacade } from '@my-project/auth';
+```
+
+---
+
+TITLE: Creating Index File Exports - TypeScript
+DESCRIPTION: Demonstrates creating an 'index.ts' file in a directory to re-export modules or members from multiple files within that directory, simplifying external imports.
+SOURCE: https://github.com/avivharuzi/angular-best-practices/blob/main/README.md#_snippet_29
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+export * from './uuid';
+export * from './convert-to-title-case';
+```
+
+---
+
+TITLE: Importing from Index File - TypeScript
+DESCRIPTION: Shows how to import multiple members from different files within a directory by referencing the directory name, assuming an 'index.ts' file exists and re-exports them.
+SOURCE: https://github.com/avivharuzi/angular-best-practices/blob/main/README.md#_snippet_30
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+import { uuid, convertToTitleCase } from './../utils';
+```
+
+---
+
+TITLE: Declaring Class Property with any Type (Before) - TypeScript
+DESCRIPTION: Illustrates declaring a class property with the `any` type in TypeScript/Angular. Using `any` opts out of type checking for that variable, allowing any value or structure to be assigned. This reduces developer productivity by hiding potential type-related bugs until runtime. Requires an Angular component.
+SOURCE: https://github.com/avivharuzi/angular-best-practices/blob/main/README.md#_snippet_12
+
+LANGUAGE: typescript
+CODE:
+
+```
+export class MovieComponent {
+  movie: any;
+
+  constructor() {
+    this.movie = {
+      // Whatever we want can be decaler here...
+    };
+  }
+}
+```
+
+---
+
+TITLE: Defining Eager Route - Angular - TypeScript
+DESCRIPTION: Shows a standard configuration for an Angular route that loads a component eagerly. The component code is included in the main application bundle.
+SOURCE: https://github.com/avivharuzi/angular-best-practices/blob/main/README.md#_snippet_27
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+const routes: Routes = [
+  {
+    path: '',
+    pathMatch: 'full',
+    component: HomeComponent,
+  },
+];
+```
+
+---
+
+TITLE: Declaring Input Type as Plain String (Before) - TypeScript
+DESCRIPTION: Demonstrates declaring an `@Input` property in an Angular component using the generic `string` type. While simple, this approach allows any string value to be passed, losing type safety and potentially leading to runtime errors if the component expects specific predefined string values. Requires an Angular component.
+SOURCE: https://github.com/avivharuzi/angular-best-practices/blob/main/README.md#_snippet_10
+
+LANGUAGE: typescript
+CODE:
+
+```
+export class ButtonComponent {
+  @Input() type: string;
+}
+```
+
+---
+
+TITLE: Providing String Dependency - Angular - TypeScript
+DESCRIPTION: Demonstrates an older or less recommended way of providing a dependency in an Angular module using a plain string token. This approach can lead to naming conflicts in larger applications.
+SOURCE: https://github.com/avivharuzi/angular-best-practices/blob/main/README.md#_snippet_22
+
+LANGUAGE: TypeScript
+CODE:
+
+```
+@NgModule({
+  providers: [
+    {
+      provide: 'TITLE',
+      useValue: 'My Site',
+    },
+  ],
+})
+export class SomeModule {}
+```
+
+---
+
+TITLE: Method Called from Angular Template (Before) - TypeScript
+DESCRIPTION: Provides the TypeScript implementation of a simple method that is called from an Angular template in the 'Before' example. While the method itself is basic, calling it directly from the template is inefficient due to Angular's change detection mechanism executing it frequently. Requires an Angular component.
+SOURCE: https://github.com/avivharuzi/angular-best-practices/blob/main/README.md#_snippet_17
+
+LANGUAGE: typescript
+CODE:
+
+```
+export class HomeComponent {
+  getTitle(): string {
+    return 'Home Page';
+  }
+}
+```
