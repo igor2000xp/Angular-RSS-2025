@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, input, output } from '@angular/core';
+import { Component, input, OnInit, output } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { Device } from '../../core/models/dashboard.interface';
@@ -17,7 +17,6 @@ import { ActiveDeviceDirective } from '../../shared/directives/active-device.dir
         </mat-icon>
         <span class="device-label">{{ device().label }}</span>
       </div>
-
       <mat-slide-toggle
         [checked]="device().state"
         (change)="onToggle($event.checked)"
@@ -34,13 +33,13 @@ import { ActiveDeviceDirective } from '../../shared/directives/active-device.dir
         justify-content: space-between;
         padding: 12px 16px;
         border-radius: 8px;
-        background-color: #f8f9fa;
+        background-color: #4a5568;
         margin-bottom: 8px;
         transition: all 0.2s ease;
       }
 
       .device-item:hover {
-        background-color: #e9ecef;
+        background-color: #718096;
       }
 
       .device-info {
@@ -53,38 +52,43 @@ import { ActiveDeviceDirective } from '../../shared/directives/active-device.dir
         font-size: 24px;
         width: 24px;
         height: 24px;
-        color: #6c757d;
+        color: #a0aec0;
         transition: color 0.2s ease;
       }
 
       .device-icon.active {
-        color: #1976d2;
+        color: #4299e1;
       }
 
       .device-label {
         font-size: 14px;
         font-weight: 500;
-        color: #495057;
+        color: #e2e8f0;
       }
 
       .active-device {
-        background-color: #e3f2fd !important;
-        border: 1px solid #1976d2;
+        background-color: #2d3748 !important;
+        border: 1px solid #4299e1;
       }
 
       .active-device .device-icon {
-        color: #1976d2;
+        color: #4299e1;
       }
 
       .active-device .device-label {
-        color: #1976d2;
+        color: #4299e1;
       }
     `,
   ],
 })
-export class DeviceComponent {
+export class DeviceComponent implements OnInit {
   device = input.required<Device>();
   deviceToggle = output<{ device: Device; newState: boolean }>();
+
+  ngOnInit(): void {
+    // Ensure proper initialization
+    console.log('Device component initialized');
+  }
 
   onToggle(newState: boolean): void {
     this.deviceToggle.emit({

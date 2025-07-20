@@ -69,7 +69,7 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 
       .sidebar {
         width: 280px;
-        background-color: #1e1e1e;
+        background-color: #2d3748;
         color: white;
         transition: width 0.3s ease;
       }
@@ -83,17 +83,22 @@ import { MatSidenavModule } from '@angular/material/sidenav';
         align-items: center;
         justify-content: space-between;
         padding: 16px;
-        border-bottom: 1px solid #333;
+        border-bottom: 1px solid #4a5568;
       }
 
       .sidebar-title {
         margin: 0;
         font-size: 18px;
         font-weight: 500;
+        color: #ffffff;
       }
 
       .toggle-button {
-        color: white;
+        color: #a0aec0;
+      }
+
+      .toggle-button:hover {
+        color: #ffffff;
       }
 
       .sidebar-menu {
@@ -101,16 +106,17 @@ import { MatSidenavModule } from '@angular/material/sidenav';
       }
 
       .menu-item {
-        color: #ccc;
+        color: #a0aec0;
         transition: background-color 0.2s ease;
       }
 
       .menu-item:hover {
-        background-color: #333;
+        background-color: #4a5568;
+        color: #ffffff;
       }
 
       .menu-item.active {
-        background-color: #1976d2;
+        background-color: #4299e1;
         color: white;
       }
 
@@ -119,7 +125,7 @@ import { MatSidenavModule } from '@angular/material/sidenav';
         bottom: 0;
         width: 100%;
         padding: 16px;
-        border-top: 1px solid #333;
+        border-top: 1px solid #4a5568;
       }
 
       .user-info {
@@ -132,12 +138,13 @@ import { MatSidenavModule } from '@angular/material/sidenav';
         width: 40px;
         height: 40px;
         border-radius: 50%;
-        background-color: #1976d2;
+        background-color: #4299e1;
         display: flex;
         align-items: center;
         justify-content: center;
         font-weight: 500;
         font-size: 14px;
+        color: #ffffff;
       }
 
       .user-details {
@@ -148,15 +155,16 @@ import { MatSidenavModule } from '@angular/material/sidenav';
       .user-name {
         font-size: 14px;
         font-weight: 500;
+        color: #ffffff;
       }
 
       .user-role {
         font-size: 12px;
-        color: #ccc;
+        color: #a0aec0;
       }
 
       .main-content {
-        background-color: #f5f5f5;
+        background-color: #1e1e1e;
         padding: 20px;
       }
 

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { MatTabsModule } from '@angular/material/tabs';
 import { DashboardService } from '../../core/services/dashboard.service';
 import { CardListComponent } from '../cards/card-list.component';
@@ -19,7 +19,7 @@ import { CardListComponent } from '../cards/card-list.component';
           <mat-tab [label]="tab.title">
             <div class="tab-content">
               <app-card-list
-                [cards]="tab.cards"
+                [cards]="getCardsForTab(tab.id)()"
                 [tabId]="tab.id"
                 (cardToggle)="onCardToggle($event)"
                 (deviceToggle)="onDeviceToggle($event)"
@@ -35,34 +35,45 @@ import { CardListComponent } from '../cards/card-list.component';
     `
       .dashboard {
         height: 100%;
-        display: flex;
-        flex-direction: column;
+        background-color: #1e1e1e;
       }
 
       .dashboard-tabs {
-        flex: 1;
+        height: 100%;
+      }
+
+      .dashboard-tabs ::ng-deep .mat-mdc-tab-header {
+        background-color: #2d3748;
+        border-bottom: 1px solid #4a5568;
+      }
+
+      .dashboard-tabs ::ng-deep .mat-mdc-tab-label {
+        color: #a0aec0;
+        font-weight: 500;
+      }
+
+      .dashboard-tabs ::ng-deep .mat-mdc-tab-label.mat-mdc-tab-label-active {
+        color: #4299e1;
+      }
+
+      .dashboard-tabs ::ng-deep .mat-mdc-tab-header-pagination-chevron {
+        color: #a0aec0;
+      }
+
+      .dashboard-tabs ::ng-deep .mat-mdc-ink-bar {
+        background-color: #4299e1;
       }
 
       .tab-content {
         padding: 20px;
-        height: 100%;
-        overflow-y: auto;
+        background-color: #1e1e1e;
+        min-height: calc(100vh - 120px);
       }
 
-      ::ng-deep .mat-mdc-tab-group {
-        height: 100%;
-      }
-
-      ::ng-deep .mat-mdc-tab-body-wrapper {
-        height: 100%;
-      }
-
-      ::ng-deep .mat-mdc-tab-body {
-        height: 100%;
-      }
-
-      ::ng-deep .mat-mdc-tab-body-content {
-        height: 100%;
+      @media (max-width: 768px) {
+        .tab-content {
+          padding: 16px;
+        }
       }
     `,
   ],
@@ -71,29 +82,26 @@ export class DashboardComponent implements OnInit {
   private dashboardService = inject(DashboardService);
 
   tabs = this.dashboardService.getTabs();
-  selectedTabIndex = computed(() => 0); // Default to first tab
+  selectedTabIndex = signal(0);
 
   ngOnInit(): void {
     // Ensure proper initialization
     console.log('Dashboard component initialized');
   }
 
+  getCardsForTab(tabId: string) {
+    return this.dashboardService.getCardsForTab(tabId);
+  }
+
   onTabChange(index: number): void {
-    // Handle tab change if needed
-    console.log('Tab changed to index:', index);
+    this.selectedTabIndex.set(index);
   }
 
   onCardToggle(event: { cardId: string; newState: boolean }): void {
-    const currentTab = this.tabs()[this.selectedTabIndex()];
-    if (currentTab) {
-      this.dashboardService.toggleAllDevices(currentTab.id, event.cardId, event.newState);
-    }
+    this.dashboardService.toggleCard(event.cardId, event.newState);
   }
 
   onDeviceToggle(event: { cardId: string; deviceIndex: number; newState: boolean }): void {
-    const currentTab = this.tabs()[this.selectedTabIndex()];
-    if (currentTab) {
-      this.dashboardService.toggleDevice(currentTab.id, event.cardId, event.deviceIndex);
-    }
+    this.dashboardService.toggleDevice(event.cardId, event.deviceIndex, event.newState);
   }
 }

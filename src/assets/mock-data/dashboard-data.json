@@ -5,114 +5,98 @@
       "title": "Overview",
       "cards": [
         {
-          "id": "balcony-weather",
+          "id": "balcony",
           "title": "Balcony",
           "layout": "horizontalLayout",
           "items": [
             {
               "type": "sensor",
-              "icon": "thermostat",
               "label": "Temperature",
-              "value": {
-                "amount": 18.5,
-                "unit": "°C"
-              }
+              "value": "18.7",
+              "unit": "°C",
+              "icon": "thermostat"
             },
             {
               "type": "sensor",
-              "icon": "water_drop",
               "label": "Humidity",
-              "value": {
-                "amount": 72,
-                "unit": "%"
-              }
+              "value": "80.78",
+              "unit": "%",
+              "icon": "water_drop"
             },
             {
               "type": "sensor",
-              "icon": "cloud",
-              "label": "Weather",
-              "value": {
-                "amount": 1,
-                "unit": "clear"
-              }
+              "label": "Forecast",
+              "value": "Cloudy",
+              "unit": "",
+              "icon": "cloud"
             }
           ]
         },
         {
-          "id": "indoor-rooms",
-          "title": "Rooms",
+          "id": "bathroom",
+          "title": "Bathroom",
           "layout": "verticalLayout",
           "items": [
             {
               "type": "sensor",
-              "icon": "co2",
-              "label": "CO2 Sensor",
-              "value": {
-                "amount": 520,
-                "unit": "ppm"
-              }
+              "label": "Occupancy",
+              "value": "Clear",
+              "unit": "",
+              "icon": "home"
             },
             {
               "type": "sensor",
-              "icon": "water_drop",
-              "label": "Humidity",
-              "value": {
-                "amount": 45,
-                "unit": "%"
-              }
+              "label": "Presence keep time",
+              "value": "0",
+              "unit": "min",
+              "icon": "visibility"
             }
           ]
         },
         {
-          "id": "bathroom-motion",
-          "title": "Bathroom",
+          "id": "vacuum-charger",
+          "title": "Vacuum Cleaner Charger",
+          "layout": "verticalLayout",
+          "items": [
+            {
+              "type": "device",
+              "label": "Switch",
+              "state": false,
+              "icon": "power_off"
+            },
+            {
+              "type": "sensor",
+              "label": "Power",
+              "value": "0",
+              "unit": "W",
+              "icon": "flash_on"
+            },
+            {
+              "type": "sensor",
+              "label": "Current",
+              "value": "0.00",
+              "unit": "A",
+              "icon": "waves"
+            },
+            {
+              "type": "sensor",
+              "label": "Voltage",
+              "value": "240",
+              "unit": "V",
+              "icon": "timeline"
+            }
+          ]
+        },
+        {
+          "id": "desktop-pc",
+          "title": "Desktop PC",
           "layout": "singleDevice",
           "items": [
             {
-              "type": "sensor",
-              "icon": "motion_photos_on",
-              "label": "Motion Sensor",
-              "value": {
-                "amount": 1,
-                "unit": "detected"
-              }
-            }
-          ]
-        },
-        {
-          "id": "living-room-mixed",
-          "title": "Living Room",
-          "layout": "verticalLayout",
-          "items": [
-            {
               "type": "device",
-              "icon": "lightbulb",
-              "label": "Floor Lamp",
-              "state": true
-            },
-            {
-              "type": "device",
-              "icon": "power",
-              "label": "TV Socket",
-              "state": false
-            },
-            {
-              "type": "sensor",
-              "icon": "thermostat",
-              "label": "Temperature",
-              "value": {
-                "amount": 23.5,
-                "unit": "°C"
-              }
-            },
-            {
-              "type": "sensor",
-              "icon": "co2",
-              "label": "CO2 Sensor",
-              "value": {
-                "amount": 610,
-                "unit": "ppm"
-              }
+              "label": "On",
+              "state": true,
+              "icon": "computer"
             }
           ]
         }
@@ -123,67 +107,21 @@
       "title": "Lights",
       "cards": [
         {
-          "id": "kitchen-light",
-          "title": "Kitchen",
-          "layout": "singleDevice",
+          "id": "living-room-lights",
+          "title": "Living Room Lights",
+          "layout": "horizontalLayout",
           "items": [
             {
               "type": "device",
-              "icon": "lightbulb",
-              "label": "Ceiling Light",
-              "state": true
-            }
-          ]
-        },
-        {
-          "id": "corridor-light",
-          "title": "Corridor",
-          "layout": "singleDevice",
-          "items": [
-            {
-              "type": "device",
-              "icon": "lightbulb",
-              "label": "Ceiling Light",
-              "state": false
-            }
-          ]
-        },
-        {
-          "id": "living-room-light",
-          "title": "Living Room",
-          "layout": "singleDevice",
-          "items": [
-            {
-              "type": "device",
-              "icon": "lightbulb",
-              "label": "Chandelier",
-              "state": true
-            }
-          ]
-        },
-        {
-          "id": "bedroom-light",
-          "title": "Bedroom",
-          "layout": "singleDevice",
-          "items": [
-            {
-              "type": "device",
-              "icon": "lightbulb",
               "label": "Main Light",
-              "state": true
-            }
-          ]
-        },
-        {
-          "id": "bathroom-light",
-          "title": "Bathroom",
-          "layout": "singleDevice",
-          "items": [
+              "state": true,
+              "icon": "lightbulb"
+            },
             {
               "type": "device",
-              "icon": "lightbulb",
-              "label": "Ceiling Light",
-              "state": false
+              "label": "Ambient Light",
+              "state": false,
+              "icon": "lightbulb_outline"
             }
           ]
         }

@@ -5,37 +5,36 @@ export interface BaseItem {
   label: string;
 }
 
-// Device interface
-export interface Device extends BaseItem {
+export interface Device {
   type: 'device';
+  label: string;
   state: boolean;
+  icon: string;
 }
 
-// Sensor interface
-export interface Sensor extends BaseItem {
+export interface Sensor {
   type: 'sensor';
-  value: {
-    amount: number;
-    unit: string;
-  };
+  label: string;
+  value: string;
+  unit: string;
+  icon: string;
 }
 
-// Card interface
+export type CardItem = Device | Sensor;
+
 export interface Card {
   id: string;
   title: string;
-  layout: 'singleDevice' | 'horizontalLayout' | 'verticalLayout';
-  items: (Device | Sensor)[];
+  layout: 'verticalLayout' | 'horizontalLayout' | 'singleDevice';
+  items: CardItem[];
 }
 
-// Tab interface
 export interface Tab {
   id: string;
   title: string;
   cards: Card[];
 }
 
-// Dashboard data
 export interface DashboardData {
   tabs: Tab[];
 }

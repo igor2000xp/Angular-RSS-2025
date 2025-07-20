@@ -28,52 +28,69 @@ export class DashboardService {
     });
   }
 
-  toggleDevice(tabId: string, cardId: string, deviceIndex: number): void {
-    this.dashboardData.update(data => {
-      if (!data) return data;
-
-      const newData = { ...data };
-      const tab = newData.tabs?.find(t => t.id === tabId);
-      if (tab) {
-        const card = tab.cards?.find(c => c.id === cardId);
-        if (card && card.items && card.items[deviceIndex]) {
-          const device = card.items[deviceIndex];
-          if (device && device.type === 'device') {
-            (device as Device).state = !(device as Device).state;
-          }
-        }
-      }
-      return newData;
-    });
-  }
-
-  toggleAllDevices(tabId: string, cardId: string, state: boolean): void {
-    this.dashboardData.update(data => {
-      if (!data) return data;
-
-      const newData = { ...data };
-      const tab = newData.tabs?.find(t => t.id === tabId);
-      if (tab) {
-        const card = tab.cards?.find(c => c.id === cardId);
-        if (card && card.items) {
-          card.items.forEach(item => {
-            if (item && item.type === 'device') {
-              (item as Device).state = state;
-            }
-          });
-        }
-      }
-      return newData;
+  getCardsForTab(tabId: string): Signal<Card[]> {
+    return computed(() => {
+      const tab = this.getTabById(tabId)();
+      return tab?.cards || [];
     });
   }
 
   getControllableDevicesCount(card: Card): number {
-    if (!card || !card.items) return 0;
-    return card.items.filter(item => item && item.type === 'device').length;
+    if (!card?.items) return 0;
+    return card.items.filter(item => item?.type === 'device').length;
   }
 
   hasActiveDevices(card: Card): boolean {
-    if (!card || !card.items) return false;
-    return card.items.some(item => item && item.type === 'device' && (item as Device).state);
+    if (!card?.items) return false;
+    return card.items.some(item => item?.type === 'device' && (item as Device).state);
+  }
+
+  toggleCard(cardId: string, newState: boolean): void {
+    const currentData = this.dashboardData();
+    if (!currentData?.tabs) return;
+
+    const updatedTabs = currentData.tabs.map(tab => ({
+      ...tab,
+      cards: tab.cards.map(card => {
+        if (card.id === cardId) {
+          return {
+            ...card,
+            items: card.items.map(item => {
+              if (item?.type === 'device') {
+                return { ...item, state: newState } as Device;
+              }
+              return item;
+            }),
+          };
+        }
+        return card;
+      }),
+    }));
+
+    this.dashboardData.set({ ...currentData, tabs: updatedTabs });
+  }
+
+  toggleDevice(cardId: string, deviceIndex: number, newState: boolean): void {
+    const currentData = this.dashboardData();
+    if (!currentData?.tabs) return;
+
+    const updatedTabs = currentData.tabs.map(tab => ({
+      ...tab,
+      cards: tab.cards.map(card => {
+        if (card.id === cardId) {
+          const updatedItems = [...card.items];
+          if (updatedItems[deviceIndex]?.type === 'device') {
+            updatedItems[deviceIndex] = {
+              ...updatedItems[deviceIndex],
+              state: newState,
+            } as Device;
+          }
+          return { ...card, items: updatedItems };
+        }
+        return card;
+      }),
+    }));
+
+    this.dashboardData.set({ ...currentData, tabs: updatedTabs });
   }
 }

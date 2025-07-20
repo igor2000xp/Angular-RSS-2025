@@ -45,12 +45,14 @@ import { SensorComponent } from '../devices/sensor.component';
       .card {
         margin-bottom: 16px;
         border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
         transition: box-shadow 0.2s ease;
+        background-color: #2d3748;
+        border: 1px solid #4a5568;
       }
 
       .card:hover {
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
       }
 
       mat-card-header {
@@ -63,7 +65,7 @@ import { SensorComponent } from '../devices/sensor.component';
       mat-card-title {
         font-size: 18px;
         font-weight: 600;
-        color: #1976d2;
+        color: #4299e1;
         margin: 0;
       }
 
