@@ -8,6 +8,10 @@
     // border: 1px solid #4a5568;
   }
 
+  .card-header {
+    padding: 10px;
+  }
+
   .card:hover {
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
   }
@@ -32,7 +36,7 @@
   }
 
   mat-card-content {
-    padding: 16px;
+    padding: 0 16px 16px 16px;
   }
 
   // Single Device Layout
@@ -41,19 +45,20 @@
     flex-direction: column;
     align-items: center;
     gap: 12px;
-    padding: 16px;
+    padding: 4px 16px;
   }
 
   .device-toggle-item {
     width: 100%;
     display: flex;
-    justify-content: center;
-    margin-bottom: 12px;
+    justify-content: right;
+    // margin-bottom: 12px;
   }
 
   .device-toggle-item mat-slide-toggle {
     color: #e2e8f0;
     font-weight: 500;
+    margin-right: -20px;
   }
 
   .device-toggle-item ::ng-deep .mat-mdc-slide-toggle {
@@ -168,11 +173,11 @@
   }
 
   .single-device-item .device-label {
-    font-size: 16px;
+    font-size: 22px;
     font-weight: 500;
     color: #e2e8f0;
     flex-grow: 1;
-    text-align: left;
+    text-align: right;
   }
 
   .single-device-item .device-status {
