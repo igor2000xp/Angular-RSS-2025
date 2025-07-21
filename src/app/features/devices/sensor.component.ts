@@ -8,13 +8,33 @@ import { Sensor } from '../../core/models/dashboard.interface';
   standalone: true,
   imports: [CommonModule, MatIconModule],
   template: `
-    <div class="sensor-item">
-      <div class="sensor-info">
-        <mat-icon class="sensor-icon">{{ sensor().icon }}</mat-icon>
-        <span class="sensor-label">{{ sensor().label }}</span>
+    <ng-container
+      *ngTemplateOutlet="
+        layout() === 'horizontal' ? horizontalLayoutTemplate : verticalLayoutTemplate
+      "
+    ></ng-container>
+
+    <ng-template #verticalLayoutTemplate let-sensorData>
+      <div class="sensor-item">
+        <div class="sensor-info">
+          <mat-icon class="sensor-icon">{{ sensor().icon }}</mat-icon>
+          <span class="sensor-label">{{ sensor().label }}</span>
+        </div>
+        <div class="sensor-value">{{ sensor().value }}{{ sensor().unit }}</div>
       </div>
-      <div class="sensor-value">{{ sensor().value }}{{ sensor().unit }}</div>
-    </div>
+    </ng-template>
+
+    <ng-template #horizontalLayoutTemplate>
+      <!-- <div class="sensor-container-horizontal"> -->
+      <div class="sensor-item-horizontal">
+        <div class="sensor-info-horizontal">
+          <span class="sensor-label">{{ sensor().label }}</span>
+          <mat-icon class="sensor-icon">{{ sensor().icon }}</mat-icon>
+          <div class="sensor-value">{{ sensor().value }}{{ sensor().unit }}</div>
+        </div>
+      </div>
+      <!-- </div> -->
+    </ng-template>
   `,
   styles: [
     `
@@ -29,12 +49,31 @@ import { Sensor } from '../../core/models/dashboard.interface';
         transition: background-color 0.2s ease;
       }
 
+      .sensor-item-horizontal {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        padding: 2px 6px;
+        border-radius: 8px;
+        background-color: #4a5568;
+        margin-bottom: 8px;
+        transition: background-color 0.2s ease;
+      }
+
       .sensor-item:hover {
         background-color: #718096;
       }
 
       .sensor-info {
         display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .sensor-info-horizontal {
+        display: flex;
+        flex-direction: column;
         align-items: center;
         gap: 12px;
       }
@@ -68,6 +107,7 @@ import { Sensor } from '../../core/models/dashboard.interface';
 })
 export class SensorComponent implements OnInit {
   sensor = input.required<Sensor>();
+  layout = input<string>('vertical');
 
   ngOnInit(): void {
     // Ensure proper initialization

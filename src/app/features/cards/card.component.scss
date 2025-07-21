@@ -1,0 +1,232 @@
+:host {
+  .card {
+    margin-bottom: 16px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    transition: box-shadow 0.2s ease;
+    background-color: #2d3748;
+    // border: 1px solid #4a5568;
+  }
+
+  .card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  }
+
+  mat-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 16px 0 16px;
+  }
+
+  mat-card-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #4299e1;
+    margin: 0;
+  }
+
+  .card-actions {
+    display: flex;
+    align-items: center;
+  }
+
+  mat-card-content {
+    padding: 16px;
+  }
+
+  // Single Device Layout
+  .single-device-layout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+  }
+
+  .device-toggle-item {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 12px;
+  }
+
+  .device-toggle-item mat-slide-toggle {
+    color: #e2e8f0;
+    font-weight: 500;
+  }
+
+  .device-toggle-item ::ng-deep .mat-mdc-slide-toggle {
+    --mdc-switch-selected-track-color: #4299e1;
+    --mdc-switch-selected-handle-color: #ffffff;
+    --mdc-switch-unselected-track-color: #4a5568;
+    --mdc-switch-unselected-handle-color: #a0aec0;
+    --mdc-switch-selected-focus-track-color: #3182ce;
+    --mdc-switch-selected-hover-track-color: #3182ce;
+    --mdc-switch-selected-pressed-track-color: #2b6cb0;
+    --mdc-switch-selected-focus-handle-color: #ffffff;
+    --mdc-switch-selected-hover-handle-color: #ffffff;
+    --mdc-switch-selected-pressed-handle-color: #f7fafc;
+  }
+
+  .device-toggle-item ::ng-deep .mat-mdc-slide-toggle .mdc-switch {
+    width: 52px;
+    height: 32px;
+    fill: rgb(244, 10, 10);
+    // background: green;
+    border-radius: 50%;
+  }
+
+  // .device-toggle-item ::ng-deep .mat-mdc-slide-toggle .mdc-switch .mdc-switch__track {
+  //   border-radius: 16px;
+  //   height: 20px;
+  //   width: 40px;
+  //   background-color: rgb(6, 142, 253);
+  // }
+
+  .device-toggle-item ::ng-deep .mat-mdc-slide-toggle .mdc-switch .mdc-switch__handle-track {
+    // border: 1px solid rgb(247, 248, 248);
+    border-radius: 16px;
+    margin: 0 0 0 0;
+  }
+
+  .device-toggle-item ::ng-deep .mat-mdc-slide-toggle .mdc-switch .mdc-switch__handle {
+    // width: 16px;
+    // height: 16px;
+    border-radius: 50%;
+    // border: 1px solid black;
+    // margin: 0;
+    // fill: white;
+    background-color: rgb(247, 248, 248);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  .device-toggle-item
+    ::ng-deep
+    .mat-mdc-slide-toggle
+    .mdc-switch--selected
+    .mdc-switch__handle::before {
+    // content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 10px;
+    font-weight: bold;
+    color: #4299e1;
+    line-height: 1;
+  }
+
+  .device-toggle-item
+    ::ng-deep
+    .mat-mdc-slide-toggle
+    .mdc-switch--selected
+    .mdc-switch__handle::before {
+    // border: 2px solid red;
+    border-color: greenyellow;
+  }
+  // .device-toggle-item
+  //   ::ng-deep
+  //   .mat-mdc-slide-toggle
+  //   .mdc-switch--selected
+  //   .mdc-switch__handle::after {
+  //   border: 2px solid rgb(9, 238, 40);
+  // }
+
+  .single-device-item {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    border-radius: 8px;
+    background-color: #4a5568;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    min-width: 120px;
+    // border: 1px solid black;
+  }
+
+  .single-device-item:hover {
+    background-color: #718096;
+  }
+
+  .single-device-item .device-icon {
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+    color: #a0aec0;
+    transition: color 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .single-device-item .device-icon.active {
+    // color: #4299e1;
+    // color: #42e187;
+  }
+
+  .single-device-item .device-label {
+    font-size: 16px;
+    font-weight: 500;
+    color: #e2e8f0;
+    flex-grow: 1;
+    text-align: left;
+  }
+
+  .single-device-item .device-status {
+    font-size: 14px;
+    font-weight: 600;
+    color: #a0aec0;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background-color: #2d3748;
+    flex-shrink: 0;
+  }
+
+  .single-device-item.active-device {
+    background-color: #2d3748 !important;
+    // border: 1px solid black;
+    // border: 1px solid #42e17a;
+  }
+
+  .single-device-item.active-device .device-icon {
+    color: #4299e1;
+  }
+
+  .single-device-item.active-device .device-label {
+    color: #4299e1;
+  }
+
+  .single-device-item.active-device .device-status {
+    color: #4299e1;
+    background-color: #1a202c;
+  }
+
+  // Horizontal Layout
+  .horizontal-layout {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+
+  .horizontal-layout app-device,
+  .horizontal-layout app-sensor {
+    flex: 1;
+    min-width: 20px;
+  }
+
+  // Vertical Layout
+  .vertical-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .vertical-layout app-device,
+  .vertical-layout app-sensor {
+    width: 100%;
+  }
+}

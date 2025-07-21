@@ -1,112 +1,28 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, input, OnInit, output } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { Card, Device, Sensor } from '../../core/models/dashboard.interface';
 import { DashboardService } from '../../core/services/dashboard.service';
+import { ActiveDeviceDirective } from '../../shared/directives/active-device.directive';
 import { DeviceComponent } from '../devices/device.component';
 import { SensorComponent } from '../devices/sensor.component';
 
 @Component({
   selector: 'app-card',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatSlideToggleModule, DeviceComponent, SensorComponent],
-  template: `
-    <mat-card class="card" *ngIf="card()">
-      <mat-card-header>
-        <mat-card-title>{{ card().title }}</mat-card-title>
-        <div class="card-actions" *ngIf="showGroupToggle()">
-          <mat-slide-toggle
-            [checked]="hasActiveDevices()"
-            (change)="onGroupToggle($event.checked)"
-            color="primary"
-          >
-            All Devices
-          </mat-slide-toggle>
-        </div>
-      </mat-card-header>
-
-      <mat-card-content>
-        <div class="card-content" [ngClass]="getLayoutClass()">
-          @for (item of card().items || []; track item?.label) {
-            @if (item?.type === 'device') {
-              <app-device [device]="getDevice(item)" (deviceToggle)="onDeviceToggle($event)">
-              </app-device>
-            } @else if (item?.type === 'sensor') {
-              <app-sensor [sensor]="getSensor(item)"> </app-sensor>
-            }
-          }
-        </div>
-      </mat-card-content>
-    </mat-card>
-  `,
-  styles: [
-    `
-      .card {
-        margin-bottom: 16px;
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-        transition: box-shadow 0.2s ease;
-        background-color: #2d3748;
-        border: 1px solid #4a5568;
-      }
-
-      .card:hover {
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
-      }
-
-      mat-card-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 16px 16px 0 16px;
-      }
-
-      mat-card-title {
-        font-size: 18px;
-        font-weight: 600;
-        color: #4299e1;
-        margin: 0;
-      }
-
-      .card-actions {
-        display: flex;
-        align-items: center;
-      }
-
-      mat-card-content {
-        padding: 16px;
-      }
-
-      .card-content {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-      }
-
-      .card-content.horizontal {
-        flex-direction: row;
-        flex-wrap: wrap;
-        gap: 16px;
-      }
-
-      .card-content.horizontal app-device,
-      .card-content.horizontal app-sensor {
-        flex: 1;
-        min-width: 200px;
-      }
-
-      .card-content.single {
-        align-items: center;
-      }
-
-      .card-content.single app-device,
-      .card-content.single app-sensor {
-        width: 100%;
-        max-width: 300px;
-      }
-    `,
+  imports: [
+    CommonModule,
+    MatCardModule,
+    MatIconModule,
+    MatSlideToggleModule,
+    ActiveDeviceDirective,
+    DeviceComponent,
+    SensorComponent,
   ],
+  templateUrl: './card.component.html',
+  styleUrls: ['./card.component.scss'],
 })
 export class CardComponent implements OnInit {
   card = input.required<Card>();

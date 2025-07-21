@@ -88,15 +88,15 @@
           ]
         },
         {
-          "id": "desktop-pc",
+          "id": "smart-tv",
           "title": "Desktop PC",
           "layout": "singleDevice",
           "items": [
             {
               "type": "device",
-              "label": "On",
-              "state": true,
-              "icon": "computer"
+              "label": "Power",
+              "state": false,
+              "icon": "tv"
             }
           ]
         }
@@ -126,14 +126,20 @@
           "items": [
             {
               "type": "device",
-              "label": "Light",
+              "label": "Main Light",
               "state": true,
               "icon": "lightbulb"
             },
             {
               "type": "device",
-              "label": "Lamp",
+              "label": "Table Lamp",
               "state": true,
+              "icon": "lightbulb_outline"
+            },
+            {
+              "type": "device",
+              "label": "Floor Lamp",
+              "state": false,
               "icon": "lightbulb_outline"
             }
           ]
@@ -145,7 +151,7 @@
           "items": [
             {
               "type": "device",
-              "label": "Light",
+              "label": "Ceiling Light",
               "state": false,
               "icon": "lightbulb"
             },
@@ -170,13 +176,13 @@
           "items": [
             {
               "type": "device",
-              "label": "Light",
+              "label": "Main Light",
               "state": false,
               "icon": "lightbulb"
             },
             {
               "type": "device",
-              "label": "LED",
+              "label": "Under Cabinet",
               "state": true,
               "icon": "lightbulb_outline"
             }
