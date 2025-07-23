@@ -5,7 +5,6 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     transition: box-shadow 0.2s ease;
     background-color: #2d3748;
-    // border: 1px solid #4a5568;
   }
 
   .card-header {
@@ -52,7 +51,6 @@
     width: 100%;
     display: flex;
     justify-content: right;
-    // margin-bottom: 12px;
   }
 
   .device-toggle-item mat-slide-toggle {
@@ -78,30 +76,16 @@
     width: 52px;
     height: 32px;
     fill: rgb(244, 10, 10);
-    // background: green;
     border-radius: 50%;
   }
 
-  // .device-toggle-item ::ng-deep .mat-mdc-slide-toggle .mdc-switch .mdc-switch__track {
-  //   border-radius: 16px;
-  //   height: 20px;
-  //   width: 40px;
-  //   background-color: rgb(6, 142, 253);
-  // }
-
   .device-toggle-item ::ng-deep .mat-mdc-slide-toggle .mdc-switch .mdc-switch__handle-track {
-    // border: 1px solid rgb(247, 248, 248);
     border-radius: 16px;
     margin: 0 0 0 0;
   }
 
   .device-toggle-item ::ng-deep .mat-mdc-slide-toggle .mdc-switch .mdc-switch__handle {
-    // width: 16px;
-    // height: 16px;
     border-radius: 50%;
-    // border: 1px solid black;
-    // margin: 0;
-    // fill: white;
     background-color: rgb(247, 248, 248);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   }
@@ -111,7 +95,6 @@
     .mat-mdc-slide-toggle
     .mdc-switch--selected
     .mdc-switch__handle::before {
-    // content: '✓';
     position: absolute;
     top: 50%;
     left: 50%;
@@ -121,22 +104,6 @@
     color: #4299e1;
     line-height: 1;
   }
-
-  .device-toggle-item
-    ::ng-deep
-    .mat-mdc-slide-toggle
-    .mdc-switch--selected
-    .mdc-switch__handle::before {
-    // border: 2px solid red;
-    border-color: greenyellow;
-  }
-  // .device-toggle-item
-  //   ::ng-deep
-  //   .mat-mdc-slide-toggle
-  //   .mdc-switch--selected
-  //   .mdc-switch__handle::after {
-  //   border: 2px solid rgb(9, 238, 40);
-  // }
 
   .single-device-item {
     width: 100%;
@@ -151,7 +118,6 @@
     transition: all 0.2s ease;
     cursor: pointer;
     min-width: 120px;
-    // border: 1px solid black;
   }
 
   .single-device-item:hover {
@@ -165,11 +131,6 @@
     color: #a0aec0;
     transition: color 0.2s ease;
     flex-shrink: 0;
-  }
-
-  .single-device-item .device-icon.active {
-    // color: #4299e1;
-    // color: #42e187;
   }
 
   .single-device-item .device-label {
@@ -192,8 +153,6 @@
 
   .single-device-item.active-device {
     background-color: #2d3748 !important;
-    // border: 1px solid black;
-    // border: 1px solid #42e17a;
   }
 
   .single-device-item.active-device .device-icon {
