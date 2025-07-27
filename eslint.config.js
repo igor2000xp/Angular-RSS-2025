@@ -142,4 +142,13 @@ export default [
       '.angular/**',
     ],
   },
+  {
+    extends: ['plugin:@ngrx/all'],
+    rules: {
+      '@ngrx/good-action-hygiene': 'warn',
+      '@ngrx/select-style': ['warn', 'method'],
+      '@ngrx/prefer-concat-latest-from': ['warn', { strict: true }],
+      '@ngrx/use-consistent-global-store-name': ['warn', 'store$'],
+    },
+  },
 ];
