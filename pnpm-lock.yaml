@@ -41,9 +41,12 @@ importers:
       '@angular/router':
         specifier: ^20.1.2
         version: 20.1.2(@angular/common@20.1.2(@angular/core@20.1.2(@angular/compiler@20.1.2)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@20.1.2(@angular/compiler@20.1.2)(rxjs@7.8.2)(zone.js@0.15.1))(@angular/platform-browser@20.1.2(@angular/animations@20.1.2(@angular/common@20.1.2(@angular/core@20.1.2(@angular/compiler@20.1.2)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@20.1.2(@angular/compiler@20.1.2)(rxjs@7.8.2)(zone.js@0.15.1)))(@angular/common@20.1.2(@angular/core@20.1.2(@angular/compiler@20.1.2)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@20.1.2(@angular/compiler@20.1.2)(rxjs@7.8.2)(zone.js@0.15.1)))(rxjs@7.8.2)
-      browser:
-        specifier: link:@angular/animations/browser
-        version: link:@angular/animations/browser
+      '@ngrx/store':
+        specifier: 20.0.0-rc.0
+        version: 20.0.0-rc.0(@angular/core@20.1.2(@angular/compiler@20.1.2)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2)
+      '@ngrx/store-devtools':
+        specifier: 20.0.0-rc.0
+        version: 20.0.0-rc.0(@angular/core@20.1.2(@angular/compiler@20.1.2)(rxjs@7.8.2)(zone.js@0.15.1))(@ngrx/store@20.0.0-rc.0(@angular/core@20.1.2(@angular/compiler@20.1.2)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(rxjs@7.8.2)
       fuite:
         specifier: ^5.0.7
         version: 5.0.7(typescript@5.8.3)
@@ -1545,6 +1548,19 @@ packages:
   '@napi-rs/nice@1.0.4':
     resolution: {integrity: sha512-Sqih1YARrmMoHlXGgI9JrrgkzxcaaEso0AH+Y7j8NHonUs+xe4iDsgC3IBIDNdzEewbNpccNN6hip+b5vmyRLw==}
     engines: {node: '>= 10'}
+
+  '@ngrx/store-devtools@20.0.0-rc.0':
+    resolution: {integrity: sha512-B4sPlPdzgy3JKk8cHUUbXAiUisiUWaVooQpO1PqhlA0ii2su0Nb/opYo6LMtAL7dCHfNCwFXrxGm/AuDP/8H+w==}
+    peerDependencies:
+      '@angular/core': ^20.0.0
+      '@ngrx/store': 20.0.0-rc.0
+      rxjs: ^6.5.3 || ^7.5.0
+
+  '@ngrx/store@20.0.0-rc.0':
+    resolution: {integrity: sha512-dKuW2UV8OgLGPLIh1be9H8T1oGyC3irU0baqdlaX2CKXIb1O2sZg7biJ+5FmKnokfR/DQuh/OQr6rku+U7u3hQ==}
+    peerDependencies:
+      '@angular/core': ^20.0.0
+      rxjs: ^6.5.3 || ^7.5.0
 
   '@ngtools/webpack@20.1.1':
     resolution: {integrity: sha512-HBF/bQyDjGlzv2uOXlwjrLFxdERynen7JuX3ZgI1vijc41aBX/nyMNa4MsKiOwNOQmpHGJU6qn6/gAN4DhocKQ==}
@@ -6646,6 +6662,19 @@ snapshots:
       '@napi-rs/nice-win32-ia32-msvc': 1.0.4
       '@napi-rs/nice-win32-x64-msvc': 1.0.4
     optional: true
+
+  '@ngrx/store-devtools@20.0.0-rc.0(@angular/core@20.1.2(@angular/compiler@20.1.2)(rxjs@7.8.2)(zone.js@0.15.1))(@ngrx/store@20.0.0-rc.0(@angular/core@20.1.2(@angular/compiler@20.1.2)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(rxjs@7.8.2)':
+    dependencies:
+      '@angular/core': 20.1.2(@angular/compiler@20.1.2)(rxjs@7.8.2)(zone.js@0.15.1)
+      '@ngrx/store': 20.0.0-rc.0(@angular/core@20.1.2(@angular/compiler@20.1.2)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2)
+      rxjs: 7.8.2
+      tslib: 2.8.1
+
+  '@ngrx/store@20.0.0-rc.0(@angular/core@20.1.2(@angular/compiler@20.1.2)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2)':
+    dependencies:
+      '@angular/core': 20.1.2(@angular/compiler@20.1.2)(rxjs@7.8.2)(zone.js@0.15.1)
+      rxjs: 7.8.2
+      tslib: 2.8.1
 
   '@ngtools/webpack@20.1.1(@angular/compiler-cli@20.1.2(@angular/compiler@20.1.2)(typescript@5.8.3))(typescript@5.8.3)(webpack@5.99.9(esbuild@0.25.5))':
     dependencies:
