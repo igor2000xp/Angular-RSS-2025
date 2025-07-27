@@ -1,0 +1,45 @@
+<mat-sidenav-container class="sidebar-container">
+  <mat-sidenav
+    #sidenav
+    mode="side"
+    opened
+    class="sidebar"
+    [class.sidebar-collapsed]="!isExpanded()"
+  >
+    <!-- Sidebar Header -->
+    <div class="sidebar-header">
+      <h2 class="sidebar-title">Smart Home UI</h2>
+      <button mat-icon-button (click)="toggleSidebar()" class="toggle-button">
+        <mat-icon>menu</mat-icon>
+      </button>
+    </div>
+
+    <!-- Sidebar Menu -->
+    <mat-nav-list class="sidebar-menu">
+      <a mat-list-item routerLink="/overview" routerLinkActive="active" class="menu-item">
+        <mat-icon matListItemIcon>dashboard</mat-icon>
+        <span matListItemTitle>Overview</span>
+      </a>
+      <a mat-list-item routerLink="/about" routerLinkActive="active" class="menu-item">
+        <mat-icon matListItemIcon>info</mat-icon>
+        <span matListItemTitle>About</span>
+      </a>
+    </mat-nav-list>
+
+    <!-- Sidebar Footer -->
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="avatar">RS</div>
+        <div class="user-details">
+          <span class="user-name">RS School</span>
+          <span class="user-role">Angular</span>
+        </div>
+      </div>
+    </div>
+  </mat-sidenav>
+
+  <!-- Main Content Area -->
+  <mat-sidenav-content class="main-content">
+    <ng-content></ng-content>
+  </mat-sidenav-content>
+</mat-sidenav-container>

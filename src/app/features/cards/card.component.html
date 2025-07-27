@@ -1,0 +1,102 @@
+@if (card()) {
+  <mat-card class="card">
+    <mat-card-header class="card-header">
+      <mat-card-title>{{ card().title }}</mat-card-title>
+      @if (showGroupToggle()) {
+        <div class="card-actions">
+          <mat-slide-toggle
+            [checked]="hasActiveDevices()"
+            (change)="onGroupToggle($event.checked)"
+            color="primary"
+          >
+            All Devices
+          </mat-slide-toggle>
+        </div>
+      }
+    </mat-card-header>
+
+    <mat-card-content>
+      <!-- Single Device Card -->
+      <ng-template #singleDeviceTemplate>
+        <div class="single-device-layout">
+          @for (item of card().items || []; track item?.label) {
+            @if (item?.type === 'device') {
+              <div class="device-toggle-item">
+                <mat-slide-toggle
+                  [checked]="getDevice(item).state"
+                  (change)="onDeviceToggle({ device: getDevice(item), newState: $event.checked })"
+                  color="primary"
+                >
+                </mat-slide-toggle>
+              </div>
+              <div
+                (click)="
+                  onDeviceToggle({ device: getDevice(item), newState: !getDevice(item).state })
+                "
+                class="single-device-item"
+                [appActiveDevice]="getDevice(item).state"
+              >
+                <mat-icon class="device-icon" [class.active]="getDevice(item).state">
+                  {{ getDevice(item).icon }}
+                </mat-icon>
+                <span class="device-label">{{ getDevice(item).state ? 'On' : 'Off' }}</span>
+              </div>
+            } @else if (item?.type === 'sensor') {
+              <app-sensor [sensor]="getSensor(item)"></app-sensor>
+            }
+          }
+        </div>
+      </ng-template>
+
+      <!-- Multi-Device Horizontal Layout -->
+      <ng-template #horizontalLayoutTemplate>
+        <div class="horizontal-layout">
+          @for (item of card().items || []; track item?.label) {
+            @if (item?.type === 'device') {
+              <app-device
+                style="width: 28%"
+                layout="horizontal"
+                [device]="getDevice(item)"
+                (deviceToggle)="onDeviceToggle($event)"
+              >
+              </app-device>
+            } @else if (item?.type === 'sensor') {
+              <app-sensor
+                style="width: 28%"
+                layout="horizontal"
+                [sensor]="getSensor(item)"
+              ></app-sensor>
+            }
+          }
+        </div>
+      </ng-template>
+
+      <!-- Multi-Device Vertical Layout -->
+      <ng-template #verticalLayoutTemplate>
+        <div class="vertical-layout">
+          @for (item of card().items || []; track item?.label) {
+            @if (item?.type === 'device') {
+              <app-device [device]="getDevice(item)" (deviceToggle)="onDeviceToggle($event)">
+              </app-device>
+            } @else if (item?.type === 'sensor') {
+              <app-sensor [sensor]="getSensor(item)"></app-sensor>
+            }
+          }
+        </div>
+      </ng-template>
+
+      <!-- Dynamic Template Selection -->
+      @switch (getLayoutClass()) {
+        @case ('single') {
+          <ng-container *ngTemplateOutlet="singleDeviceTemplate"></ng-container>
+        }
+        @case ('horizontal') {
+          <ng-container *ngTemplateOutlet="horizontalLayoutTemplate"></ng-container>
+        }
+        @default {
+          <ng-container *ngTemplateOutlet="verticalLayoutTemplate"></ng-container>
+        }
+      }
+    </mat-card-content>
+  </mat-card>
+}

@@ -1,7 +1,7 @@
 ---
 description:
 globs: **/*.component.ts
-alwaysApply: false
+alwaysApply: true
 ---
 
 - You are an expert Angular programmer using TypeScript, Angular 20 and Jest that focuses on producing clear, readable code.
